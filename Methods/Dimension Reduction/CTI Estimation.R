@@ -36,10 +36,6 @@ Psi_function <- function(X, y, X0, B, interm_lvl, bandwith) {
 
 CTI <- function(X, y, X0, q, interm_lvl, bandwith, num_init_evals = 1000, num_starts = 3) {
   
-  if (!requireNamespace("randtoolbox", quietly = TRUE)) {
-    stop("Package 'randtoolbox' is required but not installed.")
-  }
-  
   # Function to compute the orthonormal matrix from a flat vector using QR decomposition
   orthonormalize <- function(A) {
     qr.Q(qr(matrix(A, nrow = p, ncol = q)))
