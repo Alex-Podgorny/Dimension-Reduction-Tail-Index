@@ -30,16 +30,15 @@ TIREX1 <- function(X, y, X0, q, interm_lvl) {
   Z <- scale(X[X0,])
   
   # Sort response variable 'y' and reorder Z accordingly
-  res_ord <- sort(y, index.return = TRUE)
+  res_ord <- sort(y[X0], index.return = TRUE)
   Z_ord <- Z[res_ord$ix,]
   
   # Initialize M_hat_i for the cumulative covariance matrix
   M_hat_i <- 0
   n <- nrow(Z_ord)
   
-  # Sum of outer products for the top 'k' observations
+  # Calculation of formula (6.1) of Algbalou et al. 2024
   for (j in 1:k) {
-    # Sum the last 'j' rows of Z_ord and compute outer product
     S_j <- apply(matrix(Z_ord[(n - j + 1):n,], nrow = j), 2, sum)
     M_hat_i <- M_hat_i + S_j %*% t(S_j)
   }
@@ -85,21 +84,19 @@ TIREX2 <- function(X, y, X0, q, interm_lvl) {
   Z <- scale(X[X0,])
   
   # Sort response variable 'y' and reorder Z accordingly
-  res_ord <- sort(y, index.return = TRUE)
+  res_ord <- sort(y[X0], index.return = TRUE)
   Z_ord <- Z[res_ord$ix,]
   
   # Initialize M_hat_i for the cumulative covariance-like matrix
   M_hat_i <- 0
   n <- nrow(Z_ord)
   
-  # Accumulate weighted outer products for the top 'k' observations
+  # Calculation of formula (6.2) of Algbalou et al. 2024
   for (j in 1:k) {
     T_j <- 0
     for (i in 1:j) {
-      # Compute outer product for each row in the top 'j' entries
       T_j <- T_j + t(matrix(Z_ord[(n - i + 1),], nrow = 1)) %*% matrix(Z_ord[(n - i + 1),], nrow = 1)
     }
-    # Update M_hat_i with adjusted outer product centered by j*I
     M_hat_i <- M_hat_i + t(T_j - j * diag(1, ncol(X))) %*% (T_j - j * diag(1, ncol(X)))
   }
   
