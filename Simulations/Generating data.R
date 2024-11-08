@@ -2,25 +2,27 @@
 #seed = as.numeric(commandArgs(trailingOnly = TRUE))
 seed = 1
 
+dir.create(paste("Simulations/Generated data/seed_",seed,sep=""))
+
 set.seed(seed)
 
-n <- 1000 # sample size
+n_max <- 10000 # max sample size
 
-pmax = 30
+p_max = 30 # max dimension of X
 
-U = runif(n)
-X_max = matrix(runif(n*pmax),ncol=pmax)
+U_max = runif(n_max)
+X_max = matrix(runif(n_max*p_max),ncol=p_max)
 
 
 source("Simulations/Models.R")
 
 for(model in names(models)){
   name = models[[model]][["name"]]
-  p = models[[model]][["p"]] ; q = models[[model]][["q"]]
+  p = models[[model]][["p"]] ; q = models[[model]][["q"]] ; n = models[[model]][["n"]]
   B_0 = models[[model]][["B_0"]] ; B_1 = models[[model]][["B_1"]]
   xi = models[[model]][["xi"]] ; ell = models[[model]][["ell"]]
   nameFile = paste(
-    "Data-",name,
+    name,
     "-p_",p,
     "-q_",q,
     "-n_",n,
@@ -29,12 +31,13 @@ for(model in names(models)){
     sep=""
   )
   
-  X <- X_max[,1:p]
+  X <- X_max[1:n,1:p]
+  U <- U_max[1:n]
   y <- U^(-apply(t(t(B_0)%*%t(X)),1,xi))*apply(cbind(U,t(t(B_1)%*%t(X))),1,function(col) ell(col[1],col[-1]))
   
-  Sim <- list(X=X,y=y)
+  data <- list(X=X,y=y,carac = list(name=name,xi=xi,q=q,B_0=B_0))
   
-  save(Sim,file=paste("Simulations/Generated data/",nameFile,sep=""))  
+  save(data,file=paste("Simulations/Generated data/seed_",seed,"/",nameFile,sep=""))  
 }
 
 
