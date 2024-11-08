@@ -42,7 +42,7 @@ CTI <- function(X, y, X0, q, interm_lvl, bandwith, num_init_evals = 1000, num_st
     Psi_function(X, y, X0, B, interm_lvl, bandwith)
   }
   
-  # Minimization of the objective function
+  # Minimization of the objective function (function from Minimization_Method.R)
   Bhat <- Minimization(objective_fn,c(ncol(X),q),num_init_evals,num_starts)
   
   return(Bhat)
