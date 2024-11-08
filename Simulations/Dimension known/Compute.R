@@ -70,29 +70,29 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
         
         # Calculate estimation errors for each method and store them in respective matrices
         
-        # CTI method
-        Bhat_CTI <- CTI(X, y, X0, q, alpha, h)
-        Matrix_errors_Bhat_CTI[i, j] <- norm(Bhat_CTI %*% t(Bhat_CTI) - B_0 %*% t(B_0), "2")
-        Matrix_errors_gamma_CTI[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
-        
-        # Gardes method (only for p = 4)
-        Bhat_TDR <- Gardes(X, y, X0, q, alpha, h)
-        Matrix_errors_Bhat_TDR[i, j] <- norm(Bhat_TDR %*% t(Bhat_TDR) - B_0 %*% t(B_0), "2")
-        Matrix_errors_gamma_TDR[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_TDR, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
+        # # CTI method
+        # Bhat_CTI <- CTI(X, y, X0, q, alpha, h)
+        # Matrix_errors_Bhat_CTI[i, j] <- norm(Bhat_CTI %*% t(Bhat_CTI) - B_0 %*% t(B_0), "2")
+        # Matrix_errors_gamma_CTI[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE))
+        # 
+        # # Gardes method (only for p = 4)
+        # Bhat_TDR <- Gardes(X, y, X0, q, alpha, h)
+        # Matrix_errors_Bhat_TDR[i, j] <- norm(Bhat_TDR %*% t(Bhat_TDR) - B_0 %*% t(B_0), "2")
+        # Matrix_errors_gamma_TDR[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_TDR, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE))
         
         # TIREX1 method
         Bhat_T1 <- TIREX1(X, y, X0, q, alpha)
         Matrix_errors_Bhat_T1[i, j] <- norm(Bhat_T1 %*% t(Bhat_T1) - B_0 %*% t(B_0), "2")
-        Matrix_errors_gamma_T1[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_T1, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
+        Matrix_errors_gamma_T1[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_T1, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
         # TIREX2 method
         Bhat_T2 <- TIREX2(X, y, X0, q, alpha)
         Matrix_errors_Bhat_T2[i, j] <- norm(Bhat_T2 %*% t(Bhat_T2) - B_0 %*% t(B_0), "2")
-        Matrix_errors_gamma_T2[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_T2, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
+        Matrix_errors_gamma_T2[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_T2, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
         # Baseline errors for B0 and Identity matrix methods
-        Matrix_errors_gamma_B0 <- mean((local_Hill(X, y, B_0, Bhat_T2, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
-        Matrix_errors_gamma_Id <- mean((local_Hill(X, y, diag(1, p), Bhat_T2, alpha, n^(-b/p) / 2) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
+        Matrix_errors_gamma_B0 <- mean((local_Hill(X, y,Grid_X0, B_0, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
+        Matrix_errors_gamma_Id <- mean((local_Hill(X, y,Grid_X0, diag(1, p), alpha, n^(-b/p) / 2) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
       }
     }
@@ -103,8 +103,8 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
       Gardes = list(Bhat = Matrix_errors_Bhat_TDR, gamma = Matrix_errors_gamma_TDR),
       TIREX1 = list(Bhat = Matrix_errors_Bhat_T1, gamma = Matrix_errors_gamma_T1),
       TIREX2 = list(Bhat = Matrix_errors_Bhat_T2, gamma = Matrix_errors_gamma_T2),
-      B0 = Matrix_errors_gamma_B0,
-      Id = Matrix_errors_gamma_Id
+      B0 = list(gamma = Matrix_errors_gamma_B0),
+      Id = list(gamma = Matrix_errors_gamma_Id)
     )
     
     # Save the error results to a file
@@ -121,32 +121,32 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     
     # Calculate estimation errors for each method
     
-    # CTI method
-    Bhat_CTI <- CTI(X, y, X0, q, alpha, h)
-    Error_Bhat_CTI <- norm(Bhat_CTI %*% t(Bhat_CTI) - B_0 %*% t(B_0), "2")
-    Error_gamma_CTI <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
-    
+    # # CTI method
+    # Bhat_CTI <- CTI(X, y, X0, q, alpha, h)
+    # Error_Bhat_CTI <- norm(Bhat_CTI %*% t(Bhat_CTI) - B_0 %*% t(B_0), "2")
+    # Error_gamma_CTI <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE))
+
     # TIREX1 method
     Bhat_T1 <- TIREX1(X, y, X0, q, alpha)
     Error_Bhat_T1 <- norm(Bhat_T1 %*% t(Bhat_T1) - B_0 %*% t(B_0), "2")
-    Error_gamma_T1 <- mean((local_Hill(X, y, Grid_X0, Bhat_T1, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
+    Error_gamma_T1 <- mean((local_Hill(X, y, Grid_X0, Bhat_T1, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
     
     # TIREX2 method
     Bhat_T2 <- TIREX2(X, y, X0, q, alpha)
     Error_Bhat_T2 <- norm(Bhat_T2 %*% t(Bhat_T2) - B_0 %*% t(B_0), "2")
-    Error_gamma_T2 <- mean((local_Hill(X, y, Grid_X0, Bhat_T2, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
+    Error_gamma_T2 <- mean((local_Hill(X, y, Grid_X0, Bhat_T2, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
     
     # Baseline errors for B0 and Identity matrix methods
-    Error_gamma_B0 <- mean((local_Hill(X, y, B_0, Bhat_T2, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
-    Error_gamma_Id <- mean((local_Hill(X, y, diag(1, p), Bhat_T2, alpha, n^(-2/(9 * p)) / 2) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2)
+    Error_gamma_B0 <- mean((local_Hill(X, y,Grid_X0, B_0, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
+    #Error_gamma_Id <- mean((local_Hill(X, y,Grid_X0, diag(1, p), alpha, n^(-2/(9 * p)) / 2) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
     
     # Save all error results in a list
     Errors <- list(
-      CTI = list(Bhat = Error_Bhat_CTI, gamma = Error_gamma_CTI),
+      #CTI = list(Bhat = Error_Bhat_CTI, gamma = Error_gamma_CTI),
       TIREX1 = list(Bhat = Error_Bhat_T1, gamma = Error_gamma_T1),
       TIREX2 = list(Bhat = Error_Bhat_T2, gamma = Error_gamma_T2),
-      B0 = Error_gamma_B0,
-      Id = Error_gamma_Id
+      B0 = list(gamma = Error_gamma_B0)
+      #Id = list(gamma = Error_gamma_Id)
     )
     
     # Save the error results to a file
