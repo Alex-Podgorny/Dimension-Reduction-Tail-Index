@@ -17,15 +17,11 @@ X_max = matrix(runif(n_max*p_max),ncol=p_max)
 source("Simulations/Models.R")
 
 for(model in names(models)){
-  name = models[[model]][["name"]]
   p = models[[model]][["p"]] ; q = models[[model]][["q"]] ; n = models[[model]][["n"]]
   B_0 = models[[model]][["B_0"]] ; B_1 = models[[model]][["B_1"]]
   xi = models[[model]][["xi"]] ; ell = models[[model]][["ell"]]
   nameFile = paste(
-    name,
-    "-p_",p,
-    "-q_",q,
-    "-n_",n,
+    model,
     "-seed_",seed,
     ".RData",
     sep=""
