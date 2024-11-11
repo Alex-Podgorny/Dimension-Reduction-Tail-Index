@@ -33,7 +33,7 @@ for(model in names(models)){
   
   X <- X_max[1:n,1:p]
   U <- U_max[1:n]
-  y <- U^(-apply(t(t(B_0)%*%t(X)),1,xi))*apply(cbind(U,t(t(B_1)%*%t(X))),1,function(col) ell(col[1],col[-1]))
+  y <- U^(-apply(t(t(B_0)%*%t(X)),1,xi))*apply(cbind(U,t(t(B_1)%*%t(X))),1,function(col) ell(col[1],col[2]))
   
   data <- list(X=X,y=y,carac = list(name=name,xi=xi,q=q,B_0=B_0))
   

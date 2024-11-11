@@ -5,15 +5,18 @@
 #' @param X0 Indicator vector for points X in compact subset X0.
 #' @param q Dimension of the CTI subspace.
 #' @param interm_lvl Proportion of the largest y values used for estimation.
-#' @param bandwith Distance to select the observations closest to the point of interest z.
+#' @param bandwidth Distance to select the observations closest to the point of interest z.
 #' @param N0 sub_sample size
 #' @return Estimated matrix `Bhat` representing the base of the central TDR subspace.
 #' @export
 
-Gardes = function(X,y,X0,q,interm_lvl,bandwith,N0,num_init_evals = 1000, num_starts = 3){
+Gardes = function(X,y,X0,q,interm_lvl,bandwidth,N0=100,num_init_evals = 100, num_starts = 3){
+  
+  X <- X[X0,]
+  y <- y[X0]
   
   vu<-matrix(runif(p*(p-q),-1,1),ncol=(p-q)) # For build orthogonal matrix#
-  W<-X[sample(X0,N0),] # Random subsample in X0#
+  W<-X[sample((1:nrow(X)),N0),] # Random subsample in X0#
   
   
   indvar<-matrix(NA,nrow=(p-q),ncol=2^(p-q))
@@ -29,19 +32,19 @@ Gardes = function(X,y,X0,q,interm_lvl,bandwith,N0,num_init_evals = 1000, num_sta
     for (i in (q+1):p) {
       A[,i]<-A[,1]+(vu[,(i-q)])^3
     }
-    Aortho<- gramSchmidt(A)$Q
+    Aortho<- qr.Q(qr(A))
     
-    Indnul<-X0*apply(X%*%B==matrix(u,byrow=T,ncol=q,nrow=n),1,prod)
+    Indnul<-(1:nrow(X))*apply(X%*%B==matrix(u,byrow=T,ncol=q,nrow=nrow(X)),1,prod)
     Indnul<-Indnul[Indnul!=0]
     Xnew<-X[-Indnul,]
     ynew<-y[-Indnul]
     
     
     indid = list()
-    indi = c(abs((Xnew%*%B)[,1] - u[1])<bandwith)
+    indi = c(abs((Xnew%*%B)[,1] - u[1])<bandwidth)
     if(q!=1){
       for(d in 2:q){
-        indid[[d]] = c(abs((Xnew%*%B)[,d] - u[d])<bandwith)
+        indid[[d]] = c(abs((Xnew%*%B)[,d] - u[d])<bandwidth)
         indi = indi*indid[[d]]
       }
     }
@@ -55,13 +58,13 @@ Gardes = function(X,y,X0,q,interm_lvl,bandwith,N0,num_init_evals = 1000, num_sta
     yn<- ysort_u[M-M*interm_lvl]
     
     resa<-rep(NA,2^(p-q))
-    #indi<-abs(Xnew%*%B-u)<bandwith
-    indi2<-X0*indi
+    #indi<-abs(Xnew%*%B-u)<bandwidth
+    indi2<-c(1:nrow(Xnew))*indi
     if (sum(indi2!=0)<=1) {resa<-rep(Inf,2^(p-q))} else {
       indi2<-indi2[indi2!=0]
       matpivot2<-apply(Xnew[indi2,],2,median)
       
-      matind<-matrix(NA,nrow=(n-1),ncol=2*(p-1))
+      matind<-matrix(NA,nrow=nrow(Xnew),ncol=2*(p-1))
       
       for (j in seq(1,(2*(p-1)-1),by=2)) {
         matXA<-Xnew%*%Aortho[,(ceiling(j/2)+1)]
@@ -76,7 +79,7 @@ Gardes = function(X,y,X0,q,interm_lvl,bandwith,N0,num_init_evals = 1000, num_sta
           ig<-indvar[g,j]
           indi3<-indi3*matind[,ig]
         }
-        resa[j]<-sum((ynew>yn)*indi3*matfK+1e-6)/(interm_lvl*sum(indi3*matfK))-1
+        resa[j]<-sum((ynew>yn)*indi3*matfK+1e-6)/(interm_lvl*sum(indi3*matfK)+1e-6)-1
       }
     }
     
@@ -88,7 +91,7 @@ Gardes = function(X,y,X0,q,interm_lvl,bandwith,N0,num_init_evals = 1000, num_sta
     vecu<-W%*%B
     foptimtmp_B = function(u){foptimtmp(B,u)}
     E<-apply(vecu,1,foptimtmp_B)
-    sum(((apply(E,1,mean)))^2)
+    sum((apply(E,1,mean))^2)
   }
   
   # Minimization of the objective function (function from Minimization_Method.R)

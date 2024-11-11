@@ -8,11 +8,21 @@ base_dir <- "Simulations/Dimension known/Errors"
 # Retrieve all seed directories
 seed_dirs <- list.files(base_dir, pattern = "^seed_")
 
-# Initialize lists to store errors
-errors_Bhat_p4 <- list()
-errors_gamma_p4 <- list()
-errors_Bhat_p30 <- list()
-errors_gamma_p30 <- list()
+
+# Initialize a list of lists to store the error matrices by method
+red_methods_p4 <- c("CTI", "Gardes", "TIREX1", "TIREX2")
+errors_Bhat_p4 <- setNames(vector("list", length(red_methods_p4)), red_methods_p4)
+
+red_methods_p30 <- c("CTI", "TIREX1", "TIREX2")
+errors_Bhat_p30 <- setNames(vector("list", length(red_methods_p30)), red_methods_p30)
+
+methods_p4 <- c("CTI", "Gardes", "TIREX1", "TIREX2", "B0", "Id")
+errors_gamma_p4 <- setNames(vector("list", length(methods_p4)), methods_p4)
+
+methods_p30 <- c("CTI", "TIREX1", "TIREX2", "B0", "Id")
+errors_gamma_p30 <- setNames(vector("list", length(methods_p30)), methods_p30)
+
+
 
 # Loop through each seed directory to load errors
 for (seed_dir in seed_dirs) {
@@ -24,86 +34,176 @@ for (seed_dir in seed_dirs) {
     
     if (length(Errors$Gardes$Bhat) != 0) {
       # Case for p = 4
-      errors_Bhat_p4 <- lapply(c("CTI","Gardes","TIREX1","TIREX2"), function(model) rbind(errors_Bhat_p4[[model]], Errors[[model]]$Bhat))
-      errors_gamma_p4 <- lapply(names(Errors), function(model) rbind(errors_gamma_p4[[model]], Errors[[model]]$gamma))
-    } else {
-      # Case for p = 30
-      errors_Bhat_p30 <- lapply(c("CTI","TIREX1","TIREX2"), function(model) c(errors_Bhat_p30[[model]], Errors[[model]]$Bhat))
-      errors_gamma_p30 <- lapply(names(Errors), function(model) c(errors_gamma_p30[[model]], Errors[[model]]$gamma))
+      
+      # Loop through each method to store Bhat error matrices
+      for (method in methods_p4) {
+        if (!is.null(Errors[[method]]$Bhat)) {
+          # Append the current Bhat error matrix to the list for the corresponding method
+          errors_Bhat_p4[[method]] <- append(errors_Bhat_p4[[method]], list(Errors[[method]]$Bhat))
+        }
+        if (!is.null(Errors[[method]]$gamma)) {
+          # Append the current Bhat error matrix to the list for the corresponding method
+          errors_gamma_p4[[method]] <- append(errors_gamma_p4[[method]], list(Errors[[method]]$gamma))
+        }
+      }
+      } else {
+   
+        # Case for p = 30
+        
+        # Loop through each method to store Bhat error matrices
+        for (method in methods_p30) {
+          if (!is.null(Errors[[method]]$Bhat)) {
+            # Append the current Bhat error matrix to the list for the corresponding method
+            errors_Bhat_p30[[method]] <- append(errors_Bhat_p30[[method]], list(Errors[[method]]$Bhat))
+          }
+          if (!is.null(Errors[[method]]$gamma)) {
+            # Append the current Bhat error matrix to the list for the corresponding method
+            errors_gamma_p30[[method]] <- append(errors_gamma_p30[[method]], list(Errors[[method]]$gamma))
+          }
+        }
     }
   }
 }
 
-# Compute the means for p = 4
-means_Bhat_p4 <- lapply(errors_Bhat_p4, function(matrix) apply(matrix, 2, mean, na.rm = TRUE))
-means_gamma_p4 <- lapply(errors_gamma_p4, function(matrix) apply(matrix, 2, mean, na.rm = TRUE))
+# Calculate the mean matrix for each method across all seeds
+means_Bhat_p4 <- lapply(errors_Bhat_p4, function(method_errors) {
+    
+    if (length(method_errors) > 1) {
+      mean_matrix <- Reduce("+", method_errors) / length(method_errors)
+    } else {
+      mean_matrix <- method_errors[[1]]
+    }
+    mean_matrix
+  }) 
 
-# Create heatmaps for each model with p = 4
-for (model in names(means_Bhat_p4)) {
-  # Convert the mean error matrix to a data frame for ggplot2
-  mean_Bhat_df <- melt(as.data.frame(means_Bhat_p4[[model]]))
-  mean_gamma_df <- melt(as.data.frame(means_gamma_p4[[model]]))
+
+means_gamma_p4 <- lapply(errors_gamma_p4, function(method_errors) {
+
+  if (length(method_errors) > 1) {
+    mean_matrix <- Reduce("+", method_errors) / length(method_errors)
+  } else {
+    mean_matrix <- method_errors[[1]]
+  }
+  mean_matrix
+})   
+
+
   
-  # Heatmap for Bhat error
-  ggplot(mean_Bhat_df, aes(Var1, Var2, fill = value)) +
-    geom_tile(color = "white") +
-    geom_text(aes(label = round(value, 2)), color = "black") +
-    scale_fill_gradient(low = "white", high = "black") +
-    labs(title = paste("Mean Error Bhat for Model", model), x = "Alpha Exponents", y = "h Exponents") +
-    theme_minimal()
+# Create heatmaps for each method with p = 4
+
+output_dir <- "Simulations/Dimension known/Plots"
+
+for (method in names(means_gamma_p4)) {
+  # Convert the mean error matrix to a data frame for ggplot2
+  if (!is.null(means_Bhat_p4[[method]])) {
+    mean_Bhat_df_long <- data.frame(
+      Var1 = rep(seq_len(nrow(means_Bhat_p4[[method]])), ncol(means_Bhat_p4[[method]])),
+      Var2 = rep(seq_len(ncol(means_Bhat_p4[[method]])), each = nrow(means_Bhat_p4[[method]])),
+      value = as.vector(means_Bhat_p4[[method]])
+    )
+    
+    # Heatmap for Bhat error
+    plot_Bhat <- ggplot(mean_Bhat_df_long, aes(Var1, Var2, fill = value)) +
+      geom_tile(color = "white") +
+      geom_text(aes(label = round(value, 3)), color = "black") + 
+      scale_fill_gradient(low = "white", high = "darkgray") +
+      labs(title = paste("Mean Error Bhat for method", method), x = "Alpha Exponents", y = "h Exponents") +
+      theme_minimal()
+    
+    ggsave(
+      filename = file.path(output_dir, paste0("Mean_Error_Bhat_", method, ".png")),
+      plot = plot_Bhat,
+      width = 8, height = 6
+    )
+  }
+  
+  mean_gamma_df_long <- data.frame(
+    Var1 = rep(seq_len(nrow(means_gamma_p4[[method]])), ncol(means_gamma_p4[[method]])),
+    Var2 = rep(seq_len(ncol(means_gamma_p4[[method]])), each = nrow(means_gamma_p4[[method]])),
+    value = as.vector(means_gamma_p4[[method]])
+  )
   
   # Heatmap for gamma error
-  ggplot(mean_gamma_df, aes(Var1, Var2, fill = value)) +
+  plot_gamma <- ggplot(mean_gamma_df_long, aes(Var1, Var2, fill = value)) +
     geom_tile(color = "white") +
-    geom_text(aes(label = round(value, 2)), color = "black") +
-    scale_fill_gradient(low = "white", high = "black") +
-    labs(title = paste("Mean Error Gamma for Model", model), x = "Alpha Exponents", y = "h Exponents") +
+    geom_text(aes(label = round(value, 3)), color = "black") +
+    scale_fill_gradient(low = "white", high = "darkgray") +
+    labs(title = paste("Mean Error Gamma for method", method), x = "Alpha Exponents", y = "h Exponents") +
     theme_minimal()
+  
+  ggsave(
+    filename = file.path(output_dir, paste0("Mean_Error_Gamma_", method, ".png")),
+    plot = plot_gamma,
+    width = 8, height = 6
+  )
 }
 
-# Find the optimal hyperparameters for each model (p = 4)
+
+
+
+# Find the optimal hyperparameters for each method (p = 4)
 min_params_Bhat_p4 <- lapply(means_Bhat_p4, function(matrix) {
   which(matrix == min(matrix), arr.ind = TRUE)
 })
+
 min_params_gamma_p4 <- lapply(means_gamma_p4, function(matrix) {
   which(matrix == min(matrix), arr.ind = TRUE)
 })
 
-# Box plots for the best hyperparameter pairs (p = 4)
-for (model in names(min_params_Bhat_p4)) {
-  alpha_idx <- min_params_Bhat_p4[[model]][1]
-  h_idx <- min_params_Bhat_p4[[model]][2]
+# Create data frames for Bhat and gamma errors with optimal hyperparameters
+all_errors_Bhat <- data.frame()
+all_errors_gamma <- data.frame()
+
+for (method in names(means_Bhat_p4)) {
+  # Get the optimal alpha and h indices for Bhat and gamma
+  alpha_idx_Bhat <- min_params_Bhat_p4[[method]][1]
+  h_idx_Bhat <- min_params_Bhat_p4[[method]][2]
   
-  # Box plot of Bhat error
-  ggplot(data.frame(value = errors_Bhat_p4[[model]][, alpha_idx, h_idx]), aes(y = value)) +
-    geom_boxplot() +
-    labs(title = paste("Boxplot of Bhat Error for Model", model, "at Optimal Parameters"),
-         y = "Error Bhat") +
-    theme_minimal()
+  alpha_idx_gamma <- min_params_gamma_p4[[method]][1]
+  h_idx_gamma <- min_params_gamma_p4[[method]][2]
   
-  # Box plot of gamma error
-  alpha_idx <- min_params_gamma_p4[[model]][1]
-  h_idx <- min_params_gamma_p4[[model]][2]
-  ggplot(data.frame(value = errors_gamma_p4[[model]][, alpha_idx, h_idx]), aes(y = value)) +
-    geom_boxplot() +
-    labs(title = paste("Boxplot of Gamma Error for Model", model, "at Optimal Parameters"),
-         y = "Error Gamma") +
-    theme_minimal()
+  # Extract Bhat errors for optimal parameters and add to the combined data frame
+  errors_Bhat_best <- unlist(lapply(errors_Bhat_p4[[method]], function(matrix) matrix[alpha_idx_Bhat, h_idx_Bhat]))
+  all_errors_Bhat <- rbind(all_errors_Bhat, data.frame(value = errors_Bhat_best, method = method, error_type = "Bhat"))
+  
+  # Extract gamma errors for optimal parameters and add to the combined data frame
+  errors_gamma_best <- unlist(lapply(errors_gamma_p4[[method]], function(matrix) matrix[alpha_idx_gamma, h_idx_gamma]))
+  all_errors_gamma <- rbind(all_errors_gamma, data.frame(value = errors_gamma_best, method = method, error_type = "Gamma"))
 }
 
+# Combine Bhat and gamma errors into a single data frame
+all_errors <- rbind(all_errors_Bhat, all_errors_gamma)
+
+# Plot all boxplots on a single graphic, with separate panels for Bhat and gamma errors
+boxplots <- ggplot(all_errors, aes(x = method, y = value, fill = method)) +
+        geom_boxplot() +
+        facet_wrap(~error_type, scales = "free_y") +
+        labs(title = "Comparison of Bhat and Gamma Errors Across Methods at Optimal Parameters",
+             y = "Error Value",
+             x = "Method") +
+        theme_minimal() +
+        theme(legend.position = "none")
+
+ggsave(
+  filename = file.path(output_dir, paste0("Boxplots.png")),
+  plot = boxplots,
+  width = 8, height = 6
+)
+
+
 # Box plots for p = 30
-for (model in names(errors_Bhat_p30)) {
+for (method in names(errors_Bhat_p30)) {
   # Box plot of Bhat error
-  ggplot(data.frame(value = errors_Bhat_p30[[model]]), aes(y = value)) +
+  ggplot(data.frame(value = errors_Bhat_p30[[method]]), aes(y = value)) +
     geom_boxplot() +
-    labs(title = paste("Boxplot of Bhat Error for Model", model, "when p = 30"),
+    labs(title = paste("Boxplot of Bhat Error for method", method, "when p = 30"),
          y = "Error Bhat") +
     theme_minimal()
   
   # Box plot of gamma error
-  ggplot(data.frame(value = errors_gamma_p30[[model]]), aes(y = value)) +
+  ggplot(data.frame(value = errors_gamma_p30[[method]]), aes(y = value)) +
     geom_boxplot() +
-    labs(title = paste("Boxplot of Gamma Error for Model", model, "when p = 30"),
+    labs(title = paste("Boxplot of Gamma Error for method", method, "when p = 30"),
          y = "Error Gamma") +
     theme_minimal()
 }

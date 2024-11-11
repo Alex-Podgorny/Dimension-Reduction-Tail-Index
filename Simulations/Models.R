@@ -8,7 +8,7 @@
 # ℓ^(2)(u^-1, x) = [exp(-u/2) * B_1^T * x]^(-1),
 # where B_1 = (0,0,5,5,0,...,0)^T in R^p.
 
-ell_1 = function(u,t){(1 + exp(t + u^(-1)))^(-1)}
+ell_1 = function(u,t){(1 + exp(t - u^(-1)))^(-1)}
 
 ell_2 = function(u,t){(exp(-u/2)*t)^(-1)}
 
