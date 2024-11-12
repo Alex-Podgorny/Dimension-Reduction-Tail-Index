@@ -12,7 +12,8 @@ sapply(methods_func, source)
 seed <- 1 
 
 # Create a directory for saving error results, organized by seed value
-dir.create(paste("Simulations/Dimension known/Errors/seed_", seed, sep=""))
+output <- "Simulations/Dimension known/Best_params/Errors/seed_"
+dir.create(paste0(output, seed))
 
 # Loop over each dataset in the generated data folder for the given seed
 for (data_name in list.files(path = paste("Simulations/Generated data/seed_", seed, sep="")) ) {
@@ -42,8 +43,8 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   
   
   # Define hyperparameter grids for alpha and h exponents
-  alpha_exposants <- c(0.25,0.3,0.35,0.4)
-  h_exposants <- c(0.15,0.2, 0.25, 0.3)
+  alpha_exposants <- c(0.25,0.3,0.35,0.4,0.45)
+  h_exposants <- c(0.1,0.2,0.3)
   
   # Initialize matrices to store error results for each method
   Matrix_errors_Bhat_CTI <- matrix(1, nrow = length(alpha_exposants), ncol = length(h_exposants))
@@ -165,7 +166,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     )
     
     # Save the error results to a file
-    save(Errors, file = paste("Simulations/Dimension known/Best_params/Errors/seed_", seed, "/", nameFile, sep=""))
+    save(Errors, file = paste0(output, seed, "/", nameFile))
     
   }
   
