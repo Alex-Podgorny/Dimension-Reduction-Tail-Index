@@ -12,7 +12,9 @@ sapply(methods_func, source)
 seed <- 2 
 
 # Create a directory for saving error results, organized by seed value
-dir.create(paste("Simulations/Dimension known/Errors/seed_", seed, sep=""))
+output_dir <- "Simulations/Dimension known/Fixed_params/Errors/seed_"
+dir.create(paste(ouput_dir, seed, sep=""))
+
 
 # Loop over each dataset in the generated data folder for the given seed
 for (data_name in list.files(path = paste("Simulations/Generated data/seed_", seed, sep="")) ) {
@@ -84,7 +86,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     )
     
     # Save the error results to a file
-    save(Errors, file = paste("Simulations/Dimension known/Errors/seed_", seed, "/", nameFile, sep=""))
+    save(Errors, file = paste0(output_dir, seed, "/", nameFile))
   }
   
   # Case for p = 30: Single value for hyperparameters alpha and h (Gardes's method is not computable)
@@ -119,7 +121,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     )
     
     # Save the error results to a file
-    save(Errors, file = paste("Simulations/Dimension known/Errors/seed_", seed, "/", nameFile, sep=""))
+    save(Errors, file = paste0(output_dir, seed, "/", nameFile))
   
   }
   

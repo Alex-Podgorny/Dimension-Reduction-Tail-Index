@@ -9,7 +9,7 @@ sapply(methods_func, source)
 # Set the random seed for reproducibility
 # (the seed could also be passed from the command line)
 # seed = as.numeric(commandArgs(trailingOnly = TRUE))
-seed <- 2 
+seed <- 1 
 
 # Create a directory for saving error results, organized by seed value
 dir.create(paste("Simulations/Dimension known/Errors/seed_", seed, sep=""))
