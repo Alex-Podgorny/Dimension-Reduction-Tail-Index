@@ -20,11 +20,11 @@ errors_1 <- c()
 errors_2 <- c()
 errors_3 <- c()
 errors_qhat <- c()
-q_hat <- c()
+qhat <- c()
 
 # Initialize matrix results
-Choice <- matrix(NA,nrow = 8, ncol=3)
-Errors <- matrix(NA,nrow=8,ncol = 8)
+Matrix_Choices <- matrix(NA,nrow = 8, ncol=3)
+Matrix_Errors <- matrix(NA,nrow=8,ncol = 8)
 i <- 0
 
 for(model in models){
@@ -43,19 +43,19 @@ for(model in models){
     errors_3 <- c(errors_3,Errors$Error_q[3])
     errors_qhat <- c(errors_qhat,Errors$Error_q[Errors$q_hat])
     
-    q_hat <- c(q_hat,Errors$q_hat)
+    qhat <- c(qhat,Errors$q_hat)
     
   }
   
-  Choice[i,] <- c(mean(q_hat==1),mean(q_hat==2),mean(q_hat==3))
+  Matrix_Choices[i,] <- c(mean(q_hat==1),mean(q_hat==2),mean(q_hat==3))
   
-  Errors[i,] <- c(mean(errors_1),sd(errors_1),
+  Matrix_Errors[i,] <- c(mean(errors_1),sd(errors_1),
                    mean(errors_2),sd(errors_2),
                    mean(errors_3),sd(errors_3),
                    mean(errors_qhat),sd(errors_qhat)
                     )
 } 
 
-Results <- list(Choice = Choice, Errors = Errors)
+Results <- list(Matrix_Choices = Matrix_Choices, Matrix_Errors = Matrix_Errors)
 
-save(Results, filename = file.path(output_dir, "Resuts.RData"))
+save(Results, file = file.path(output_dir, "Resuts.RData"))

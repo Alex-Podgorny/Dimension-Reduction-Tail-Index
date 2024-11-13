@@ -9,11 +9,11 @@ sapply(methods_func, source)
 # Set the random seed for reproducibility
 # (the seed could also be passed from the command line)
 # seed = as.numeric(commandArgs(trailingOnly = TRUE))
-seed <- 2 
+seed <- 1
 
 # Create a directory for saving error results, organized by seed value
-output_dir <- "Simulations/Dimension unknown/Results/seed_"
-dir.create(paste(ouput_dir, seed, sep=""))
+output <- "Simulations/Dimension unknown/Errors/seed_"
+dir.create(paste0(output, seed))
 
 
 # Loop over each dataset in the generated data folder for the given seed
@@ -46,25 +46,43 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   
   # Set fixed values for alpha and h based on the sample size
   alpha <- n^(-0.2)
-  h <- n^(-0.3/q) / 2
   
-  Error_q <- c()
+  # Initialization
+  Bhat_CTI_q <- list()
   c_q <- c()
+  Error_q <- c()
   
+  # Choice of q
+  h <- n^(-0.3) / 2
   Bhat_CTI <- CTI(X, y, N0, 1, alpha, h)
-  c_q[1] <- mean(local_Hill(X, y, X0, Bhat_CTI, alpha, h),na.rm=TRUE)
-  Error_q[1] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
+  Bhat_CTI_q[[1]] <- Bhat_CTI
+  c_q[1] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h),na.rm=TRUE)
+ 
   
-
   for(q in 2:p){
-    Bhat_CTI <- CTI(X, y, N0, q, alpha, h)
-    c_q[q] <- mean(local_Hill(X, y, X0, Bhat_CTI, alpha, h),na.rm=TRUE)
-    Error_q[q] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
-    
+    h <- n^(-0.2/q) / 2
+    n0 <- ceiling(n*h^q*alpha)
+    Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
+    Bhat_CTI_q[[q]] <- Bhat_CTI
+    c_q[q] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h),na.rm=TRUE)
+  
     if(c_q[q-1] < c_q[q]){
       q_hat <- q-1
       break
     }
+  }
+  
+  # Errors for q = 1, 2, 3
+  for(q in 1:3){
+    if(q <= (q_hat+1)){
+      Error_q[q] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI_q[[q]], alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
+    } else {
+      h <- n^(-0.2/q) / 2
+      n0 <- ceiling(n*h^q*alpha)
+      Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
+      Error_q[q] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
+    }
+    
   }
   
   Errors <- list(Error_q = Error_q,

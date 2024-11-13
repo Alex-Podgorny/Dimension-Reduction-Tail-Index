@@ -10,7 +10,6 @@ sapply(methods_func, source)
 # (the seed could also be passed from the command line)
 #seed = as.numeric(commandArgs(trailingOnly = TRUE))
 seed <- 1 
-set.seed(seed)
 
 # Create a directory for saving error results, organized by seed value
 output <- "Simulations/Dimension known/Best_params/Errors/seed_"
@@ -38,7 +37,6 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   epsilon <- (1 - 0.9^(1/p)) / 2
   X0 <- which(apply(X, 1, function(x) min(min(x), min(abs(x - 1)))) > epsilon)
   
-  N0 <- sample(X0,100)
   
   # Generate grid points for estimating tail index over X0
   Grid_X0 <- randtoolbox::halton(10000, p) * (1 - 2 * epsilon) + epsilon
@@ -77,16 +75,17 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
         alpha <- n^(-alpha_exposants[i])
         b <- h_exposants[j]
         h <- n^(-b/q) / 2
+        n0 <- ceiling(n*h^q*alpha)
         
         # Calculate estimation errors for each method and store them in respective matrices
         
         # CTI method
-        Bhat_CTI <- CTI(X, y, N0, q, alpha, h)
+        Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
         Matrix_errors_Bhat_CTI[i, j] <- norm(Bhat_CTI %*% t(Bhat_CTI) - B_0 %*% t(B_0), "2")
         Matrix_errors_gamma_CTI[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
 
         # Gardes method (only for p = 4)
-        Bhat_TDR <- Gardes(X, y, N0, q, alpha, h)
+        Bhat_TDR <- Gardes(X, y, X0[1:100], q, alpha, h)
         Matrix_errors_Bhat_TDR[i, j] <- norm(Bhat_TDR %*% t(Bhat_TDR) - B_0 %*% t(B_0), "2")
         Matrix_errors_gamma_TDR[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_TDR, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
 
@@ -135,11 +134,12 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
         alpha <- n^(-alpha_exposants[i])
         b <- h_exposants[j]
         h <- n^(-b/q) / 2
+        n0 <- ceiling(n*h^q*alpha)
         
         # Calculate estimation errors for each method and store them in respective matrices
         
         # CTI method
-        Bhat_CTI <- CTI(X, y, N0, q, alpha, h)
+        Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
         Matrix_errors_Bhat_CTI[i, j] <- norm(Bhat_CTI %*% t(Bhat_CTI) - B_0 %*% t(B_0), "2")
         Matrix_errors_gamma_CTI[i, j] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
 

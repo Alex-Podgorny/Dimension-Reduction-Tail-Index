@@ -13,7 +13,7 @@ seed <- 2
 
 # Create a directory for saving error results, organized by seed value
 output_dir <- "Simulations/Dimension known/Fixed_params/Errors/seed_"
-dir.create(paste(ouput_dir, seed, sep=""))
+dir.create(paste(output_dir, seed, sep=""))
 
 
 # Loop over each dataset in the generated data folder for the given seed
