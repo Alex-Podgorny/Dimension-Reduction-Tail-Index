@@ -10,7 +10,7 @@
 
 ell_1 = function(u,t){(1 + exp(t - u^(-1)))^(-1)}
 
-ell_2 = function(u,t){(exp(-u/2)*t)^(-1)}
+ell_2 = function(u,t){exp(-u/2)*t}
 
 # For the first three models, the CTI subspace has dimension q = 1, with basis B_0 = (2,1,0,...,0)^T / sqrt(5).
 # Two functions γ(x) = ξ_{B_0}(B_0^T * x) are used, defined as:

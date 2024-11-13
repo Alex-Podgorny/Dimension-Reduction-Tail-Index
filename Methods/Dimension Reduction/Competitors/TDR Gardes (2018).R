@@ -10,13 +10,11 @@
 #' @return Estimated matrix `Bhat` representing the base of the central TDR subspace.
 #' @export
 
-Gardes = function(X,y,X0,q,interm_lvl,bandwidth,N0=100,num_init_evals = 100, num_starts = 3){
+Gardes = function(X,y,N0,q,interm_lvl,bandwidth,num_init_evals = 100, num_starts = 3){
   
-  X <- X[X0,]
-  y <- y[X0]
   
   vu<-matrix(runif(p*(p-q),-1,1),ncol=(p-q)) # For build orthogonal matrix#
-  W<-X[sample((1:nrow(X)),N0),] # Random subsample in X0#
+  W<-X[N0,] # Random subsample in X0#
   
   
   indvar<-matrix(NA,nrow=(p-q),ncol=2^(p-q))

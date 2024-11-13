@@ -40,7 +40,7 @@ Minimization <- function(objective_fn,dim,num_init_evals, num_starts){
     result <- optim(
       par = Inits[best_starts[s], ], 
       fn = objective_fn, 
-      control = list(trace = 1, maxit = 100, reltol = 1e-3)
+      control = list(trace = 1, maxit = 500, reltol = 1e-3)
     )
     
     # Store the normalized optimized matrix and its objective value
