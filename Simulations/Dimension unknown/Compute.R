@@ -67,9 +67,9 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     }
   }
   
-  Results <- list(Error_q = Error_q,
+  Errors <- list(Error_q = Error_q,
                   q_hat = q_hat)
   
-  save(Results, file = paste0(output, seed, "/", nameFile))
+  save(Errors, file = paste0(output, seed, "/", nameFile))
   
 }

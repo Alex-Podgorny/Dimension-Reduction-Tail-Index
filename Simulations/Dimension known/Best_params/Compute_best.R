@@ -8,7 +8,7 @@ sapply(methods_func, source)
 
 # Set the random seed for reproducibility
 # (the seed could also be passed from the command line)
-# seed = as.numeric(commandArgs(trailingOnly = TRUE))
+#seed = as.numeric(commandArgs(trailingOnly = TRUE))
 seed <- 1 
 set.seed(seed)
 
