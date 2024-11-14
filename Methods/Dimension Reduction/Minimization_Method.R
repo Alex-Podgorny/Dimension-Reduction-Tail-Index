@@ -13,19 +13,11 @@ Minimization <- function(objective_fn,dim,num_init_evals, num_starts){
   p = dim[1]
   q = dim[2]
 
-  # Function to compute the orthonormal matrix from a flat vector using QR decomposition
-  orthonormalize <- function(A) {
-    qr.Q(qr(matrix(A, nrow = p, ncol = q)))
-  }
-
   # Generate Halton sequence for initial evaluations and reshape as matrices
   init_evals <- randtoolbox::halton(num_init_evals, p * q)
 
-  # Reshape each row of init_evals to a p*q matrix, apply orthonormalization, and flatten back to a vector
-  Inits <- t(apply(init_evals, 1, function(row) c(orthonormalize(row))))
-
   # Compute objective function values for each initialized matrix
-  Value_inits <- apply(Inits, 1, objective_fn)
+  Value_inits <- apply(init_evals, 1, objective_fn)
 
   # Initialize lists to store optimized matrices and their objective values
   Bhat_s <- vector("list", num_starts)
@@ -38,13 +30,13 @@ Minimization <- function(objective_fn,dim,num_init_evals, num_starts){
   for (s in seq_len(num_starts)) {
     # Perform local optimization using `optim` starting from each chosen initial point
     result <- optim(
-      par = Inits[best_starts[s], ],
+      par = init_evals[best_starts[s], ],
       fn = objective_fn,
       control = list(trace = 1, maxit = 100, reltol = 1e-3)
     )
 
     # Store the normalized optimized matrix and its objective value
-    Bhat_s[[s]] <- orthonormalize(result$par)
+    Bhat_s[[s]] <- qr.Q(qr(matrix(result$par, ncol = q)))
     Value_s[s] <- result$value
   }
 

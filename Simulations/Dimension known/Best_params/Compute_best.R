@@ -1,6 +1,6 @@
 # Loading required package
 library(randtoolbox)
-library(pso)
+#library(pso)
 
 # Loading all R scripts from the 'Methods' directory
 # These scripts define various estimation methods used in the analysis
@@ -135,7 +135,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
         alpha <- n^(-alpha_exposants[i])
         b <- h_exposants[j]
         h <- n^(-b/q) / 2
-        n0 <- ceiling(n*h^q*alpha*(log(n))^2)
+        n0 <- ceiling(n*h^q*alpha*log(n))
         
         # Calculate estimation errors for each method and store them in respective matrices
         

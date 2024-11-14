@@ -38,7 +38,7 @@ CTI <- function(X, y, N0, q, interm_lvl, bandwidth, num_init_evals = 100, num_st
   
   # Define the objective function
   objective_fn <- function(B) {
-    B <- qr.Q(qr(matrix(B, nrow = p, ncol = q)))
+    B <- qr.Q(qr(matrix(B,ncol=q)))
     Psi_function(X, y, N0, B, interm_lvl, bandwidth)
   }
   
