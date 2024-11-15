@@ -7,6 +7,13 @@
 #' @param interm_lvl Proportion of the largest y values used for estimation.
 #' @param bandwidth Distance to select the observations closest to the point of interest z.
 #' @param N0 sub_sample size
+#' #' @param control A list of control parameters for the optimization process:
+#'   \describe{
+#'     \item{`num_init_evals`}{Number of initial random evaluations to generate starting points.}
+#'     \item{`num_starts`}{Number of starting points for the optimization.}
+#'     \item{`rows`}{Number of rows in each block for block-wise optimization.}
+#'     \item{`tol`}{Tolerance level for the convergence of the optimization algorithm.}
+#'   }
 #' @return Estimated matrix `Bhat` representing the base of the central TDR subspace.
 #' @export
 

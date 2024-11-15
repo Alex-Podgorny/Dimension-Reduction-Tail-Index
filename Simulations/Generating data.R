@@ -4,7 +4,7 @@ for (seed in 1:100){
   
   set.seed(seed)
   
-  n_max <- 10000 # max sample size
+  n_max <- 4000 # max sample size
   
   p_max = 30 # max dimension of X
   
