@@ -10,7 +10,7 @@
 #' @return Estimated matrix `Bhat` representing the base of the central TDR subspace.
 #' @export
 
-Gardes = function(X,y,N0,q,interm_lvl,bandwidth,num_init_evals = 100, num_starts = 3){
+Gardes = function(X,y,N0,q,interm_lvl,bandwidth,control = list(num_init_evals = 100, num_starts = 1, rows = 1, tol = 1e-2)){
   
   
   vu<-matrix(runif(p*(p-q),-1,1),ncol=(p-q)) # For build orthogonal matrix#
@@ -86,15 +86,25 @@ Gardes = function(X,y,N0,q,interm_lvl,bandwidth,num_init_evals = 100, num_starts
   
   # Define the objective function
   objective_fn <- function(B) {
+    B <- orthonormalize(B,q)
     vecu<-W%*%B
     foptimtmp_B = function(u){foptimtmp(B,u)}
     E<-apply(vecu,1,foptimtmp_B)
     sum((apply(E,1,mean))^2)
   }
   
-  # Minimization of the objective function (function from Minimization_Method.R)
-  Bhat <- Minimization(objective_fn,c(ncol(X),q),num_init_evals,num_starts)
   
+  # Estimate the base of the CTI subspace using the Minimization function
+  Bhat <- Minimization(
+    objective_fn,                   # Objective function to minimize
+    c(ncol(X), q),                  # Dimensions of the matrix to optimize (p x q)
+    control$num_init_evals,         # Number of initial evaluations
+    control$num_starts,             # Number of optimization starting points
+    control$rows,                   # Number of rows in each optimization block
+    control$tol                     # Tolerance for convergence
+  )
+  
+  # Return the estimated basis matrix
   return(Bhat)
   
 }

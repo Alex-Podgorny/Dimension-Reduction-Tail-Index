@@ -52,12 +52,12 @@ local_Hill = function(X, y, Z, B, interm_lvl, bandwidth) {
     M_z = length(ysort_z)
     k_z = ceiling(M_z * interm_lvl)
     
-    # # Check if k_z is 0
-    # if (k_z == 0) {
-    #   warning(paste("Warning: k_z = 0 for point of interest z =", j, ". Setting tail index to NaN."))
-    #   Estimated_Tail_index[j] <- NaN
-    #   next
-    # }
+    # Check if k_z is 0
+    if (k_z == 0) {
+      warning(paste("Warning: k_z = 0 for point of interest z =", j, ". Setting tail index to NaN."))
+      Estimated_Tail_index[j] <- NaN
+      next
+    }
     
     # local-Hill estimator for z
     Estimated_Tail_index[j] <- mean(log(ysort_z[(M_z - k_z + 1):M_z]) - log(ysort_z[M_z - k_z]))

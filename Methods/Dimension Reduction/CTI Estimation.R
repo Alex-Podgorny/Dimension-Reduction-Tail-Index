@@ -2,7 +2,7 @@
 #'
 #' @param X Matrix of covariates of dimension p.
 #' @param y Response variable vector.
-#' @param N0 Indicator vector for points x in compact subset X0.
+#' @param N0 Indicator vector specifying a sample within the compact subset \( X_0 \).
 #' @param B (p*q)-Matrix for dimension reduction from p to q.
 #' @param interm_lvl Proportion of the largest y values used for estimation.
 #' @param bandwidth Distance to select the observations closest to the point of interest z.
@@ -21,29 +21,51 @@ Psi_function <- function(X, y, N0, B, interm_lvl, bandwidth) {
 
 
 
-#' Estimation of the base of the central tail-index (CTI) subspace
+#' Estimation of the Base of the Central Tail-Index (CTI) Subspace
 #'
-#' @param X Matrix of covariates of dimension p.
-#' @param y Response variable vector.
-#' @param X0 Indicator vector for points X in compact subset X0.
-#' @param q Dimension of the CTI subspace.
-#' @param interm_lvl Proportion of the largest y values used for estimation.
-#' @param bandwidth Distance to select the observations closest to the point of interest z.
-#' @param num_init_evals Number of initial random evaluations for starting points.
-#' @param num_starts Number of starting points to use for local optimization.
-#' @return Estimated matrix `Bhat` representing the base of the CTI subspace.
+#' This function estimates the base of the central tail-index (CTI) subspace, 
+#' which is a low-dimensional subspace of interest in extreme value analysis. 
+#' The CTI subspace is identified using a objective function `Psi` based on 
+#' the largest values of the response variable `y`.
+#'
+#' @param X A matrix of covariates with `p` columns (dimensions).
+#' @param y A vector of response variables. The largest values of `y` are used
+#'   for estimation based on the `interm_lvl` parameter.
+#' @param N0 Indicator vector specifying a sample within the compact subset \( X_0 \).
+#' @param q Dimension of the CTI subspace to be estimated.
+#' @param interm_lvl Proportion of the largest values of `y` to consider in 
+#'   the estimation. Must be a value between 0 and 1.
+#' @param bandwidth Bandwidth parameter that determines the distance used to
+#'   select observations closest to the point of interest.
+#' @param control A list of control parameters for the optimization process:
+#'   \describe{
+#'     \item{`num_init_evals`}{Number of initial random evaluations to generate starting points.}
+#'     \item{`num_starts`}{Number of starting points for the optimization.}
+#'     \item{`rows`}{Number of rows in each block for block-wise optimization.}
+#'     \item{`tol`}{Tolerance level for the convergence of the optimization algorithm.}
+#'   }
+#' @return The estimated matrix `Bhat`, which represents the base of the CTI subspace.
 #' @export
-
-CTI <- function(X, y, N0, q, interm_lvl, bandwidth, num_init_evals = 100, num_starts = 3) {
+CTI <- function(X, y, N0, q, interm_lvl, bandwidth, control = list(num_init_evals = 100, num_starts = 1, rows = 1, tol = 1e-2)) {
   
-  # Define the objective function
+  # Step 1: Define the objective function to minimize
+  # The objective function computes the criterion Psi_function for a given basis `B`.
+  # It ensures that `B` is orthonormalized and evaluates its performance on the data.
   objective_fn <- function(B) {
-    B <- qr.Q(qr(matrix(B,ncol=q)))
-    Psi_function(X, y, N0, B, interm_lvl, bandwidth)
+    B <- orthonormalize(B, q)  # Ensure the basis matrix `B` is orthonormal
+    Psi_function(X, y, N0, B, interm_lvl, bandwidth)  # Compute the criterion
   }
   
-  # Minimization of the objective function (function from Minimization_Method.R)
-  Bhat <- Minimization(objective_fn,c(ncol(X),q),num_init_evals,num_starts)
+  # Step 2: Estimate the base of the CTI subspace using the Minimization function
+  Bhat <- Minimization(
+    objective_fn,                   # Objective function to minimize
+    c(ncol(X), q),                  # Dimensions of the matrix to optimize (p x q)
+    control$num_init_evals,         # Number of initial evaluations
+    control$num_starts,             # Number of optimization starting points
+    control$rows,                   # Number of rows in each optimization block
+    control$tol                     # Tolerance for convergence
+  )
   
+  # Step 3: Return the estimated basis matrix
   return(Bhat)
 }
