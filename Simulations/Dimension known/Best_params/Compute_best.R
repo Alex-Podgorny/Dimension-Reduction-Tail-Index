@@ -1,6 +1,5 @@
 # Loading required package
 library(randtoolbox)
-#library(pso)
 
 # Loading all R scripts from the 'Methods' directory
 # These scripts define various estimation methods used in the analysis
@@ -46,7 +45,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   
   # Define hyperparameter grids for alpha and h exponents
   alpha_exposants <- c(0.25,0.3,0.35,0.4)
-  h_exposants <- c(0.1,0.15,0.2,0.25)
+  h_exposants <- c(0.1,0.2,0.2,0.3,0.4)
   
   # Initialize matrices to store error results for each method
   Matrix_errors_Bhat_CTI <- matrix(NA, nrow = length(alpha_exposants), ncol = length(h_exposants))
