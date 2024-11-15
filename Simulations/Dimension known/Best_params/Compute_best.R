@@ -116,7 +116,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     )
     
     # Save the error results to a file
-    save(Errors, file = paste("Simulations/Dimension known/Best_params/Errors/seed_", seed, "/", nameFile, sep=""))
+    save(Errors, file = paste0(output, seed, "/", nameFile))
     
   }
   
