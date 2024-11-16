@@ -1,6 +1,6 @@
 # Load necessary packages
 library(ggplot2)
-library(tidyr)
+
 
 # Define the directory containing the results
 output_dir <- "Simulations/Dimension known/Best_params/Results"
@@ -20,10 +20,11 @@ seed_dirs <- list.files(base_dir, pattern = "^seed_")
 
 # Initialize a list of lists to store the error matrices by method
 methods <- c("CTI", "Gardes", "TIREX1", "TIREX2", "B0", "Id")
-errors_Bhat <- list()
-errors_gamma <- list()
 
 for(model in models){
+  
+  errors_Bhat <- list()
+  errors_gamma <- list()
   
   # Loop through each seed directory to load errors
   for (seed_dir in seed_dirs) {
@@ -64,8 +65,8 @@ for(model in models){
         } else {
           mean_matrix <- method_errors[[1]]
         }
-        mean_matrix
-      })   
+        sqrt(mean_matrix)
+      })  
       
       
     # Create heatmaps for each method 
@@ -74,9 +75,9 @@ for(model in models){
         # Convert the mean error matrix to a data frame for ggplot2
         if (!is.null(means_Bhat[[method]])) {
           mean_Bhat_df_long <- data.frame(
-            Var1 = rep(seq_len(nrow(means_Bhat_p4[[method]])), ncol(means_Bhat_p4[[method]])),
-            Var2 = rep(seq_len(ncol(means_Bhat_p4[[method]])), each = nrow(means_Bhat_p4[[method]])),
-            value = as.vector(means_Bhat_p4[[method]])
+            Var1 = rep(seq_len(nrow(means_Bhat[[method]])), ncol(means_Bhat[[method]])),
+            Var2 = rep(seq_len(ncol(means_Bhat[[method]])), each = nrow(means_Bhat[[method]])),
+            value = as.vector(means_Bhat[[method]])
           )
           
           # Heatmap for Bhat error
@@ -84,8 +85,8 @@ for(model in models){
             geom_tile(color = "white") +
             geom_text(aes(label = round(value, 3)), color = "black") + 
             scale_fill_gradient(low = "white", high = "darkgray") +
-            scale_x_continuous(breaks = 1:5, labels = c(0.2,0.25,0.3,0.35,0.4)) +
-            scale_y_continuous(breaks = 1:5, labels = c(0.2,0.25,0.3,0.35,0.4)) +
+            scale_x_continuous(breaks = 1:4, labels = c(0.25,0.3,0.35,0.4)) +
+            scale_y_continuous(breaks = 1:5, labels = c(0.1,0.2,0.2,0.3,0.4)) +
             labs(title = paste("Mean Error Bhat for method", method), x = "alpha exponents", y = "h exponents") +
             theme_minimal()
           
@@ -108,8 +109,8 @@ for(model in models){
           geom_tile(color = "white") +
           geom_text(aes(label = round(value, 3)), color = "black") +
           scale_fill_gradient(low = "white", high = "darkgray") +
-          scale_x_continuous(breaks = 1:5, labels = c(0.2,0.25,0.3,0.35,0.4)) +
-          scale_y_continuous(breaks = 1:5, labels = c(0.2,0.25,0.3,0.35,0.4)) +
+          scale_x_continuous(breaks = 1:4, labels = c(0.25,0.3,0.35,0.4)) +
+          scale_y_continuous(breaks = 1:5, labels = c(0.1,0.2,0.2,0.3,0.4)) +
           labs(title = paste("Mean Error Gamma for method", method), x = "alpha exponents", y = "h exponents") +
           theme_minimal()
         
@@ -126,7 +127,7 @@ for(model in models){
       
       # Find the optimal hyperparameters for each method (p = 4)
       min_params_gamma  <- lapply(means_gamma , function(matrix) {
-        which(matrix == min(matrix), arr.ind = TRUE)
+        which(matrix == min(matrix), arr.ind = TRUE)[1,]
       })
       
       # Create data frames for Bhat and gamma errors with optimal hyperparameters
@@ -169,11 +170,13 @@ for(model in models){
         theme(legend.position = "none")
       
       ggsave(
-        filename = file.path(output_dir, paste0("Boxplots-",model,".png")),
+        filename = file.path(output_dir, paste0("Boxplots-",model,".pdf")),
         plot = boxplots,
         width = 8, height = 6
       )  
       
       
   } 
+
+
 
