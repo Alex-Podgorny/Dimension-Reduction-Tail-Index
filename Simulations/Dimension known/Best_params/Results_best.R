@@ -85,8 +85,8 @@ for(model in models){
             geom_tile(color = "white") +
             geom_text(aes(label = round(value, 3)), color = "black") + 
             scale_fill_gradient(low = "white", high = "darkgray") +
-            scale_x_continuous(breaks = 1:4, labels = c(0.25,0.3,0.35,0.4)) +
-            scale_y_continuous(breaks = 1:5, labels = c(0.1,0.2,0.2,0.3,0.4)) +
+            scale_x_continuous(breaks = 1:5, labels = c(0.25,0.3,0.35,0.4,0.45)) +
+            scale_y_continuous(breaks = 1:5, labels = c(0.05,0.1,0.15,0.2,0.3)) +
             labs(title = paste("Mean Error Bhat for method", method), x = "alpha exponents", y = "h exponents") +
             theme_minimal()
           
@@ -150,7 +150,7 @@ for(model in models){
           h_idx <- min_params_gamma[[method]][2]
           
           # Extract gamma errors for optimal parameters and add to the combined data frame
-          errors_gamma_best <- unlist(lapply(errors_gamma[[method]], function(matrix) matrix[alpha_idx, h_idx]))
+          errors_gamma_best <- unlist(lapply(errors_gamma[[method]], function(matrix) sqrt(matrix[alpha_idx, h_idx])))
           all_errors_gamma <- rbind(all_errors_gamma, data.frame(value = errors_gamma_best, method = method, error_type = "Gamma"))
         }
       }

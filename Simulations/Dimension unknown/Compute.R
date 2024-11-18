@@ -10,6 +10,7 @@ sapply(methods_func, source)
 # (the seed could also be passed from the command line)
 # seed = as.numeric(commandArgs(trailingOnly = TRUE))
 seed <- 1
+set.seed(seed)
 
 # Create a directory for saving error results, organized by seed value
 output <- "Simulations/Dimension unknown/Errors/seed_"
@@ -44,8 +45,9 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   Grid_X0 <- randtoolbox::halton(10000, p) * (1 - 2 * epsilon) + epsilon
   
   
-  # Set fixed values for alpha and h based on the sample size
-  alpha <- n^(-0.2)
+  # Set fixed values for alpha and b (exponent for h) based on the sample size
+  alpha <- n^(-0.3)
+  b <- 0.2
   
   # Initialization
   Bhat_CTI_q <- list()
@@ -53,14 +55,14 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   Error_q <- c()
   
   # Choice of q
-  h <- n^(-0.3) / 2
+  h <- n^(-b) / 2
   Bhat_CTI <- CTI(X, y, N0, 1, alpha, h)
   Bhat_CTI_q[[1]] <- Bhat_CTI
   c_q[1] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h),na.rm=TRUE)
  
   
   for(q in 2:p){
-    h <- n^(-0.2/q) / 2
+    h <- n^(-b/q) / 2
     n0 <- ceiling(n*h^q*alpha)
     Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
     Bhat_CTI_q[[q]] <- Bhat_CTI

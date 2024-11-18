@@ -10,6 +10,7 @@ sapply(methods_func, source)
 # (the seed could also be passed from the command line)
 #seed = as.numeric(commandArgs(trailingOnly = TRUE))
 seed <- 1 
+set.seed(seed)
 
 # Create a directory for saving error results, organized by seed value
 output <- "Simulations/Dimension known/Best_params/Errors/seed_"
