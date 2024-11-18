@@ -47,7 +47,7 @@ for(model in models){
     
   }
   
-  Matrix_Choices[i,] <- c(mean(q_hat==1),mean(q_hat==2),mean(q_hat==3))
+  Matrix_Choices[i,] <- c(mean(qhat==1),mean(qhat==2),mean(qhat==3))
   
   Matrix_Errors[i,] <- c(mean(errors_1),sd(errors_1),
                    mean(errors_2),sd(errors_2),
