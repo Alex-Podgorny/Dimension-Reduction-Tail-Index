@@ -109,8 +109,8 @@ for(model in models){
           geom_tile(color = "white") +
           geom_text(aes(label = round(value, 3)), color = "black") +
           scale_fill_gradient(low = "white", high = "darkgray") +
-          scale_x_continuous(breaks = 1:4, labels = c(0.25,0.3,0.35,0.4)) +
-          scale_y_continuous(breaks = 1:5, labels = c(0.1,0.2,0.2,0.3,0.4)) +
+          scale_x_continuous(breaks = 1:5, labels = c(0.25,0.3,0.35,0.4,0.45)) +
+          scale_y_continuous(breaks = 1:5, labels = c(0.05,0.1,0.15,0.2,0.3)) +
           labs(title = paste("Mean Error Gamma for method", method), x = "alpha exponents", y = "h exponents") +
           theme_minimal()
         
