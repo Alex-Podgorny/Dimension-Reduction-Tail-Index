@@ -47,7 +47,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   alpha <- n^(-0.3)
   b <- 0.2
   h <- n^(-b/q) / 2
-  n0 <- ceiling(n*h^q*alpha*log(n))
+  n0 <- ceiling(n*h^q*alpha*log(n)^1.1)
   
         
   # CTI method

@@ -75,7 +75,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
         alpha <- n^(-alpha_exposants[i])
         b <- h_exposants[j]
         h <- n^(-b/q) / 2
-        n0 <- ceiling(n*h^q*alpha*log(n))
+        n0 <- ceiling(n*h^q*alpha*log(n)^1.1)
         
         # Calculate estimation errors for each method and store them in respective matrices
         
@@ -138,7 +138,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
         alpha <- n^(-alpha_exposants[i])
         b <- h_exposants[j]
         h <- n^(-b/q) / 2
-        n0 <- ceiling(n*h^q*alpha*log(n))
+        n0 <- ceiling(n*h^q*alpha*log(n)^1.1)
         
         # Calculate estimation errors for each method and store them in respective matrices
         

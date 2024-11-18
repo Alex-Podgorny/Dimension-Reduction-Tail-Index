@@ -54,7 +54,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   
   # Choice of q
   h <- n^(-b) / 2
-  n0 <- ceiling(n*h*alpha*log(n))
+  n0 <- ceiling(n*h*alpha*log(n)^1.1)
   Bhat_CTI <- CTI(X, y, X0[1:n0], 1, alpha, h)
   Bhat_CTI_q[[1]] <- Bhat_CTI
   c_q[1] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h),na.rm=TRUE)
@@ -62,7 +62,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   
   for(q in 2:p){
     h <- n^(-b/q) / 2
-    n0 <- ceiling(n*h^q*alpha*log(n))
+    n0 <- ceiling(n*h^q*alpha*log(n)^1.1)
     Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
     Bhat_CTI_q[[q]] <- Bhat_CTI
     c_q[q] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h),na.rm=TRUE)
