@@ -14,14 +14,6 @@ models <- list("model1p4","model2p4","model3p4","model4p4",
 seed_dirs <- list.files(base_dir, pattern = "^seed_")
 
 
-
-# Initialize vectors to store the error matrices by method
-errors_1 <- c()
-errors_2 <- c()
-errors_3 <- c()
-errors_qhat <- c()
-qhat <- c()
-
 # Initialize matrix results
 Matrix_Choices <- matrix(NA,nrow = 8, ncol=3)
 Matrix_Errors <- matrix(NA,nrow=8,ncol = 8)
@@ -30,6 +22,13 @@ i <- 0
 for(model in models){
   
   i <- i + 1
+  
+  # Initialize vectors to store the error matrices by method
+  errors_1 <- c()
+  errors_2 <- c()
+  errors_3 <- c()
+  errors_qhat <- c()
+  qhat <- c()
   
   # Loop through each seed directory to load errors
   for (seed_dir in seed_dirs) {
