@@ -9,11 +9,11 @@ sapply(methods_func, source)
 # Set the random seed for reproducibility
 # (the seed could also be passed from the command line)
 # seed = as.numeric(commandArgs(trailingOnly = TRUE))
-seed <- 1
+seed <- 2
 set.seed(seed)
 
 # Create a directory for saving error results, organized by seed value
-output_dir <- "Simulations/Dimension known/Fixed_params/Errors/seed_"
+output <- "Simulations/Dimension known/Fixed_params/Errors/seed_"
 dir.create(paste(output_dir, seed, sep=""))
 
 
@@ -59,6 +59,6 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   Errors <- list(Bhat = Error_Bhat_CTI, gamma = Error_gamma_CTI)
 
   # Save the error results to a file
-  save(Errors, file = paste0(output_dir, seed, "/", nameFile))
+  save(Errors, file = paste0(output, seed, "/", nameFile))
   
 }

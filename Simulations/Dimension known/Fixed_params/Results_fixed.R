@@ -14,12 +14,11 @@ seed_dirs <- list.files(base_dir, pattern = "^seed_")
 
 
 
+# Initialize a list of lists to store the error matrices by method
+errors_Bhat <- c()
+errors_gamma <- c()
 
 for(model in models){
-  
-  # Initialize a list of lists to store the error matrices by method
-  errors_Bhat <- c()
-  errors_gamma <- c()
   
   # Loop through each seed directory to load errors
   for (seed_dir in seed_dirs) {
@@ -28,13 +27,13 @@ for(model in models){
     
     load(error_file)  # Load the `Errors` list
     
-    errors_Bhat <- c(errors_Bhat,Errors$Bhat)
-    errors_gamma <- c(errors_gamma,sqrt(Errors$gamma)) 
+    errors_Bhat[[model]] <- c(errors_Bhat[[model]],Errors$Bhat)
+    errors_gamma[[model]] <- c(errors_gamma[[model]],sqrt(Errors$gamma)) 
   }
   
-  
-  save(errors_Bhat,file=paste0(output_dir, "Errors_Bhat-",model,".RData"))
-  save(errors_gamma,file=paste0(output_dir, paste0("Errors_gamma-",model,".RData")))
-  
 } 
+
+save(errors_Bhat,file=paste0(output_dir, "Errors_Bhat.RData"))
+save(errors_gamma,file=paste0(output_dir, paste0("Errors_gamma.RData")))
+
 
