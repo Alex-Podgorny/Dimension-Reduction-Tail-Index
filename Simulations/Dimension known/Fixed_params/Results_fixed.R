@@ -28,7 +28,7 @@ for(model in models){
     load(error_file)  # Load the `Errors` list
     
     errors_Bhat[[model]] <- c(errors_Bhat[[model]],Errors$Bhat)
-    errors_gamma[[model]] <- c(errors_gamma[[model]],sqrt(Errors$gamma)) 
+    errors_gamma[[model]] <- c(errors_gamma[[model]],Errors$gamma) 
   }
   
 } 

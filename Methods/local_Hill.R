@@ -6,11 +6,12 @@
 #' @param B (p*q)-Matrix for dimension reduction from p to q.
 #' @param interm_lvl Proportion of the largest y values used for estimation.
 #' @param bandwidth Distance to select the observations closest to the point of interest z.
+#' @param mink Minimum number of points should be used to estimate the tail-index.
 #' @return Vector of estimated tail-index. 
 #' @export
 
 
-local_Hill = function(X, y, Z, B, interm_lvl, bandwidth) {
+local_Hill = function(X, y, Z, B, interm_lvl, bandwidth, mink = 1) {
   
   # Check if inputs have correct dimensions and values
   if (ncol(X) != ncol(Z)) stop("Error: X and Z must have the same number of columns (dimension p).")
@@ -53,8 +54,8 @@ local_Hill = function(X, y, Z, B, interm_lvl, bandwidth) {
     k_z = ceiling(M_z * interm_lvl)
     
     # Check if k_z is 0
-    if (k_z == 0) {
-      warning(paste("Warning: k_z = 0 for point of interest z =", j, ". Setting tail index to NaN."))
+    if (k_z < mink) {
+      warning(paste("Warning: k_z <", mink ,"for point of interest z =", j, ". Setting tail index to NaN."))
       Estimated_Tail_index[j] <- NaN
       next
     }

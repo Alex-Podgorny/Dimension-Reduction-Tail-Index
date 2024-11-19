@@ -52,23 +52,16 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   c_q <- c()
   Error_q <- c()
   
-  # Choice of q
-  h <- n^(-b) / 2
-  n0 <- ceiling(n*h*alpha*log(n)^1.1)
-  Bhat_CTI <- CTI(X, y, X0[1:n0], 1, alpha, h)
-  Bhat_CTI_q[[1]] <- Bhat_CTI
-  c_q[1] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h),na.rm=TRUE)
- 
-  
-  for(q in 2:p){
-    h <- n^(-b/q) / 2
-    n0 <- ceiling(n*h^q*alpha*log(n)^1.1)
-    Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
-    Bhat_CTI_q[[q]] <- Bhat_CTI
-    c_q[q] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h),na.rm=TRUE)
-  
-    if(c_q[q-1] < c_q[q]){
-      q_hat <- q-1
+  for (q in 1:p) {
+    h <- n^(-b / q) / 2                       # Bandwidth for dimension q
+    n0 <- ceiling(n * h^q * alpha * log(n)^1.1)  
+    Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)  # Estimate the CTI subspace
+    Bhat_CTI_q[[q]] <- Bhat_CTI                  
+    c_q[q] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h), na.rm = TRUE)
+    
+    # Stop if the tail index increases for the current dimension
+    if (q > 1 && c_q[q - 1] < c_q[q]) {
+      q_hat <- q - 1  # Optimal dimension
       break
     }
   }

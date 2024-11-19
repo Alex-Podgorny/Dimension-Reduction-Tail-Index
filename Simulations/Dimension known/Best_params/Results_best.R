@@ -65,7 +65,7 @@ for(model in models){
         } else {
           mean_matrix <- method_errors[[1]]
         }
-        sqrt(mean_matrix)
+        mean_matrix
       })  
       
       
@@ -150,7 +150,7 @@ for(model in models){
           h_idx <- min_params_gamma[[method]][2]
           
           # Extract gamma errors for optimal parameters and add to the combined data frame
-          errors_gamma_best <- unlist(lapply(errors_gamma[[method]], function(matrix) sqrt(matrix[alpha_idx, h_idx])))
+          errors_gamma_best <- unlist(lapply(errors_gamma[[method]], function(matrix) matrix[alpha_idx, h_idx]))
           all_errors_gamma <- rbind(all_errors_gamma, data.frame(value = errors_gamma_best, method = method, error_type = "Gamma"))
         }
       }
