@@ -84,9 +84,13 @@ for(model in models){
           plot_Bhat <- ggplot(mean_Bhat_df_long, aes(Var1, Var2, fill = value)) +
             geom_tile(color = "white") +
             geom_text(aes(label = round(value, 3)), color = "black") + 
-            scale_fill_gradient(low = "white", high = "darkgray") +
-            scale_x_continuous(breaks = 1:5, labels = c(0.25,0.3,0.35,0.4,0.45)) +
-            scale_y_continuous(breaks = 1:5, labels = c(0.05,0.1,0.15,0.2,0.3)) +
+            scale_fill_gradient2(  low = "yellow",
+                                   mid = "white",
+                                   high = "purple",
+                                   midpoint = median(mean_Bhat_df_long$value),
+                                   transform = "log10") +
+            scale_x_continuous(breaks = 1:6, labels = c(0.2,0.25,0.3,0.35,0.4,0.45)) +
+            scale_y_continuous(breaks = 1:6, labels = c(0.01,0.05,0.1,0.15,0.2,0.3)) +
             labs(title = paste("Mean Error Bhat for method", method), x = "alpha exponents", y = "h exponents") +
             theme_minimal()
           
@@ -108,11 +112,16 @@ for(model in models){
         plot_gamma <- ggplot(mean_gamma_df_long, aes(Var1, Var2, fill = value)) +
           geom_tile(color = "white") +
           geom_text(aes(label = round(value, 3)), color = "black") +
-          scale_fill_gradient(low = "white", high = "darkgray") +
-          scale_x_continuous(breaks = 1:5, labels = c(0.25,0.3,0.35,0.4,0.45)) +
-          scale_y_continuous(breaks = 1:5, labels = c(0.05,0.1,0.15,0.2,0.3)) +
+          scale_fill_gradient2(  low = "yellow",
+                                   mid = "white",
+                                   high = "purple",
+                                   midpoint = median(mean_gamma_df_long$value),
+                                   transform = "log10") +
+          scale_x_continuous(breaks = 1:6, labels =  c(0.2,0.25,0.3,0.35,0.4,0.45)) +
+          scale_y_continuous(breaks = 1:6, labels = c(0.01,0.05,0.1,0.15,0.2,0.3)) +
           labs(title = paste("Mean Error Gamma for method", method), x = "alpha exponents", y = "h exponents") +
           theme_minimal()
+        
         
         ggsave(
           filename = file.path(output_dir, paste0("Mean_Error_Gamma_",model,"-", method, ".png")),
