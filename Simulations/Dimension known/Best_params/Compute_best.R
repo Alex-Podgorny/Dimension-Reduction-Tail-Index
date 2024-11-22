@@ -16,6 +16,10 @@ set.seed(seed)
 output <- "Simulations/Dimension known/Best_params/Errors/seed_"
 dir.create(paste0(output, seed))
 
+# Define hyperparameter grids for alpha and h exponents
+alpha_exposants <- c(0.2,0.25,0.3,0.35,0.4,0.45)
+h_exposants <- c(0.05,0.1,0.15,0.2,0.3)
+
 # Loop over each dataset in the generated data folder for the given seed
 for (data_name in list.files(path = paste("Simulations/Generated data/seed_", seed, sep="")) ) {
   
@@ -42,11 +46,6 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   # Generate grid points for estimating tail index over X0
   Grid_X0 <- randtoolbox::halton(10000, p) * (1 - 2 * epsilon) + epsilon
   
-  
-  
-  # Define hyperparameter grids for alpha and h exponents
-  alpha_exposants <- c(0.25,0.3,0.35,0.4,0.45)
-  h_exposants <- c(0.05,0.1,0.15,0.2,0.3)
   
   # Initialize matrices to store error results for each method
   Matrix_errors_Bhat_CTI <- matrix(NA, nrow = length(alpha_exposants), ncol = length(h_exposants))
@@ -75,31 +74,31 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
         alpha <- n^(-alpha_exposants[i])
         b <- h_exposants[j]
         h <- n^(-b/q) / 2
-        n0 <- ceiling(n*h^q*alpha*log(n)^1.1)
+        n0 <- n/20
         
         # Calculate estimation errors for each method and store them in respective matrices
         
         # CTI method
-        Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
-        Matrix_errors_Bhat_CTI[i, j] <- norm(Bhat_CTI %*% t(Bhat_CTI) - B_0 %*% t(B_0), "2")
+        Bhat_CTI <- CTI(X, y, intersect(X0,1:n0), q, alpha, h)
+        Matrix_errors_Bhat_CTI[i, j] <- norm(Bhat_CTI - B_0, "F")
         gamma_hat <- local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h)
         Matrix_errors_gamma_CTI[i, j] <- mean((gamma_hat - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
         # Gardes method
-        Bhat_TDR <- Gardes(X, y, X0[1:100], q, alpha, h)
-        Matrix_errors_Bhat_TDR[i, j] <- norm(Bhat_TDR %*% t(Bhat_TDR) - B_0 %*% t(B_0), "2")
+        Bhat_TDR <- Gardes(X, y, 1:100, q, alpha, h)
+        Matrix_errors_Bhat_TDR[i, j] <- norm(Bhat_TDR - B_0, "F")
         gamma_hat <- local_Hill(X, y, Grid_X0, Bhat_TDR, alpha, h)
         Matrix_errors_gamma_TDR[i, j] <- mean((gamma_hat - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
         # TIREX1 method
         Bhat_T1 <- TIREX1(X, y, 1:n, q, alpha)
-        Matrix_errors_Bhat_T1[i, j] <- norm(Bhat_T1 %*% t(Bhat_T1) - B_0 %*% t(B_0), "2")
+        Matrix_errors_Bhat_T1[i, j] <- norm(Bhat_T1 - B_0, "F")
         gamma_hat <- local_Hill(X, y, Grid_X0, Bhat_T1, alpha, h)
         Matrix_errors_gamma_T1[i, j] <- mean((gamma_hat - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
         # TIREX2 method
         Bhat_T2 <- TIREX2(X, y, 1:n, q, alpha)
-        Matrix_errors_Bhat_T2[i, j] <- norm(Bhat_T2 %*% t(Bhat_T2) - B_0 %*% t(B_0), "2")
+        Matrix_errors_Bhat_T2[i, j] <- norm(Bhat_T2 - B_0, "F")
         gamma_hat <- local_Hill(X, y, Grid_X0, Bhat_T2, alpha, h)
         Matrix_errors_gamma_T2[i, j] <- mean((gamma_hat - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
@@ -138,31 +137,31 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
         alpha <- n^(-alpha_exposants[i])
         b <- h_exposants[j]
         h <- n^(-b/q) / 2
-        n0 <- ceiling(n*h^q*alpha*log(n)^1.1)
+        n0 <- n/20
         
         # Calculate estimation errors for each method and store them in respective matrices
         
         # CTI method
-        Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
-        Matrix_errors_Bhat_CTI[i, j] <- norm(Bhat_CTI %*% t(Bhat_CTI) - B_0 %*% t(B_0), "2")
+        Bhat_CTI <- CTI(X, y, intersect(X0,1:n0), q, alpha, h)
+        Matrix_errors_Bhat_CTI[i, j] <- norm(Bhat_CT - B_0, "F")
         gamma_hat <- local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h)
         Matrix_errors_gamma_CTI[i, j] <- mean((gamma_hat - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
 
         # TIREX1 method
         Bhat_T1 <- TIREX1(X, y, 1:n, q, alpha)
-        Matrix_errors_Bhat_T1[i, j] <- norm(Bhat_T1 %*% t(Bhat_T1) - B_0 %*% t(B_0), "2")
+        Matrix_errors_Bhat_T1[i, j] <- norm(Bhat_T1 - B_0, "F")
         gamma_hat <- local_Hill(X, y, Grid_X0, Bhat_T1, alpha, h)
         Matrix_errors_gamma_T1[i, j] <- mean((gamma_hat - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
         # TIREX2 method
         Bhat_T2 <- TIREX2(X, y, 1:n, q, alpha)
-        Matrix_errors_Bhat_T2[i, j] <- norm(Bhat_T2 %*% t(Bhat_T2) - B_0 %*% t(B_0), "2")
+        Matrix_errors_Bhat_T2[i, j] <- norm(Bhat_T2 - B_0, "F")
         gamma_hat <- local_Hill(X, y, Grid_X0, Bhat_T2, alpha, h)
         Matrix_errors_gamma_T2[i, j] <- mean((gamma_hat - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
         
         # Baseline errors for B0 
         Matrix_errors_gamma_B0[i,j] <- mean((local_Hill(X, y,Grid_X0, B_0, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
-        
+        Matrix_errors_gamma_Id[i,j] <- mean((local_Hill(X, y,Grid_X0, diag(1, p), alpha, n^(-b/p) / 2) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
       }
     }
     
@@ -171,7 +170,8 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
       CTI = list(Bhat = Matrix_errors_Bhat_CTI, gamma = Matrix_errors_gamma_CTI),
       TIREX1 = list(Bhat = Matrix_errors_Bhat_T1, gamma = Matrix_errors_gamma_T1),
       TIREX2 = list(Bhat = Matrix_errors_Bhat_T2, gamma = Matrix_errors_gamma_T2),
-      B0 = list(gamma = Matrix_errors_gamma_B0)
+      B0 = list(gamma = Matrix_errors_gamma_B0),
+      Id = list(gamma = Matrix_errors_gamma_Id)
     )
     
     # Save the error results to a file
