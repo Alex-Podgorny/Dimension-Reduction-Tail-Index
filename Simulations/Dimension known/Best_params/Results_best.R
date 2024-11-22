@@ -21,6 +21,15 @@ seed_dirs <- list.files(base_dir, pattern = "^seed_")
 # Initialize a list of lists to store the error matrices by method
 methods <- c("CTI", "Gardes", "TIREX1", "TIREX2", "B0", "Id")
 
+names = list(model1p4 = "Model 1", model2p4 = "Model 2", model3p4 = "Model 3",model4p4 = "Model 4",
+             model1p30 = "Model 1", model2p30 = "Model 2", model3p30 = "Model 3",model4p30 = "Model 4",
+             B0 = "CTI known",
+             CTI = "local Hill's method", 
+             Gardes = "Gardes's method",
+             TIREX1 = "TIREX1 method's",
+             TIREX2 = "TIREX2 method's",
+             Id = "without diemsnion reduction") 
+
 for(model in models){
   
   errors_Bhat <- list()
@@ -54,7 +63,7 @@ for(model in models){
         } else {
           mean_matrix <- method_errors[[1]]
         }
-        mean_matrix
+        mean_matrix 
       }) 
       
       
@@ -70,7 +79,7 @@ for(model in models){
       
       
     # Create heatmaps for each method 
-      
+   
     for (method in methods) {
         # Convert the mean error matrix to a data frame for ggplot2
         if (!is.null(means_Bhat[[method]])) {
@@ -83,21 +92,24 @@ for(model in models){
           # Heatmap for Bhat error
           plot_Bhat <- ggplot(mean_Bhat_df_long, aes(Var1, Var2, fill = value)) +
             geom_tile(color = "white") +
-            geom_text(aes(label = round(value, 3)), color = "black") + 
+            #geom_text(aes(label = round(value, 3)), color = "black") + 
             scale_fill_gradient2(  low = "yellow",
                                    mid = "white",
                                    high = "purple",
                                    midpoint = median(mean_Bhat_df_long$value),
                                    transform = "log10") +
-            scale_x_continuous(breaks = 1:6, labels = c(0.2,0.25,0.3,0.35,0.4,0.45)) +
-            scale_y_continuous(breaks = 1:6, labels = c(0.01,0.05,0.1,0.15,0.2,0.3)) +
-            labs(title = paste("Mean Error Bhat for method", method), x = "alpha exponents", y = "h exponents") +
-            theme_minimal()
+            scale_x_continuous(breaks = 1:6, labels = c(0.25,0.3,0.35,0.4,0.45,0.5)) +
+            scale_y_continuous(breaks = 1:8, labels = c(0.01,0.05,0.1,0.15,0.2,0.3,0.4,0.5)) +
+            labs(title = paste("Errors Bhat for",names[[model]],"with", names[[method]]), x = "alpha exponents", y = "h exponents") +
+            theme_minimal() +
+            theme(#legend.position = "none",                
+                  axis.title.x = element_blank(), 
+                  axis.title.y = element_blank())
           
           ggsave(
             filename = file.path(output_dir, paste0("Mean_Error_Bhat_",model,"-", method, ".png")),
             plot = plot_Bhat,
-            width = 8, height = 6
+            width = 4, height = 3
           )
         }
       
@@ -111,22 +123,25 @@ for(model in models){
         # Heatmap for gamma error
         plot_gamma <- ggplot(mean_gamma_df_long, aes(Var1, Var2, fill = value)) +
           geom_tile(color = "white") +
-          geom_text(aes(label = round(value, 3)), color = "black") +
+          #geom_text(aes(label = round(value, 3)), color = "black") +
           scale_fill_gradient2(  low = "yellow",
                                    mid = "white",
                                    high = "purple",
                                    midpoint = median(mean_gamma_df_long$value),
                                    transform = "log10") +
-          scale_x_continuous(breaks = 1:6, labels =  c(0.2,0.25,0.3,0.35,0.4,0.45)) +
-          scale_y_continuous(breaks = 1:6, labels = c(0.01,0.05,0.1,0.15,0.2,0.3)) +
-          labs(title = paste("Mean Error Gamma for method", method), x = "alpha exponents", y = "h exponents") +
-          theme_minimal()
+          scale_x_continuous(breaks = 1:6, labels =  c(0.25,0.3,0.35,0.4,0.45,0.5)) +
+          scale_y_continuous(breaks = 1:8, labels = c(0.01,0.05,0.1,0.15,0.2,0.3,0.4,0.5)) +
+          labs(title = paste("Errors for",names[[model]],"with", names[[method]]), x = "alpha exponents", y = "h exponents") +
+          theme_minimal() +
+          theme(#legend.position = "none",
+                axis.title.x = element_blank(), 
+                axis.title.y = element_blank())
         
         
         ggsave(
           filename = file.path(output_dir, paste0("Mean_Error_Gamma_",model,"-", method, ".png")),
           plot = plot_gamma,
-          width = 8, height = 6
+          width = 4, height = 3
         )
       }
     }
@@ -175,8 +190,7 @@ for(model in models){
         labs(title = "Comparison of Bhat and Gamma Errors Across Methods at Optimal Parameters",
              y = "Error Value",
              x = "Method") +
-        theme_minimal() +
-        theme(legend.position = "none")
+        theme_minimal() 
       
       ggsave(
         filename = file.path(output_dir, paste0("Boxplots-",model,".pdf")),
