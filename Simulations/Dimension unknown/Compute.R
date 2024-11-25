@@ -1,5 +1,6 @@
 # Loading required package for random sequence generation
 library(randtoolbox)
+library(pracma)
 
 # Loading all R scripts from the 'Methods' directory
 # These scripts define various estimation methods used in the analysis
@@ -54,8 +55,8 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   
   for (q in 1:p) {
     h <- n^(-b / q) / 2                       # Bandwidth for dimension q
-    n0 <- ceiling(n * h^q * alpha * log(n)^1.1)  
-    Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)  # Estimate the CTI subspace
+    n0 <- n/20  
+    Bhat_CTI <- CTI(X, y, intersect(X0,1:n0), q, alpha, h)  # Estimate the CTI subspace
     Bhat_CTI_q[[q]] <- Bhat_CTI                  
     c_q[q] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h), na.rm = TRUE)
     
@@ -72,15 +73,15 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
       Error_q[q] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI_q[[q]], alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
     } else {
       h <- n^(-0.2/q) / 2
-      n0 <- ceiling(n*h^q*alpha*log(n))
-      Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)
+      n0 <- n/20
+      Bhat_CTI <- CTI(X, y, intersect(X0,1:n0), q, alpha, h)
       Error_q[q] <- mean((local_Hill(X, y, Grid_X0, Bhat_CTI, alpha, h) - apply(t(t(B_0) %*% t(Grid_X0)), 1, xi))^2,na.rm=TRUE)
     }
     
   }
   
   Errors <- list(Error_q = Error_q,
-                  q_hat = q_hat)
+                 q_hat = q_hat)
   
   save(Errors, file = paste0(output, seed, "/", nameFile))
   

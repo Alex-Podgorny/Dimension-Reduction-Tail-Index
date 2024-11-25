@@ -178,23 +178,37 @@ for(model in models){
           all_errors_gamma <- rbind(all_errors_gamma, data.frame(value = errors_gamma_best, method = method, error_type = "Gamma"))
         }
       }
-      # Combine Bhat and gamma errors into a single data frame
-      all_errors <- rbind(all_errors_Bhat, all_errors_gamma)
       
+      # Save Bhat and gamma errors
+      all_errors <- rbind(all_errors_Bhat, all_errors_gamma)
       save(all_errors,file=file.path(output_dir, paste0("Errors-",model,".RData")))
       
-      # Plot all boxplots on a single graphic, with separate panels for Bhat and gamma errors
-      boxplots <- ggplot(all_errors, aes(x = method, y = value, fill = method)) +
+      
+      boxplots_gamma <- ggplot(all_errors_gamma, aes(x = method, y = value, fill = method)) +
         geom_boxplot() +
         facet_wrap(~error_type, scales = "free_y") +
-        labs(title = "Comparison of Bhat and Gamma Errors Across Methods at Optimal Parameters",
+        labs(title = "Comparison of Errors Across Methods at Optimal Parameters",
              y = "Error Value",
              x = "Method") +
         theme_minimal() 
       
       ggsave(
-        filename = file.path(output_dir, paste0("Boxplots-",model,".pdf")),
-        plot = boxplots,
+        filename = file.path(output_dir, paste0("Boxplot-gamma-",model,".pdf")),
+        plot = boxplots_gamma,
+        width = 8, height = 6
+      )  
+      
+      boxplots_Bhat <- ggplot(all_errors_Bhat, aes(x = method, y = value, fill = method)) +
+        geom_boxplot() +
+        facet_wrap(~error_type, scales = "free_y") +
+        labs(title = "Comparison of Errors Across Methods at Optimal Parameters",
+             y = "Error Value",
+             x = "Method") +
+        theme_minimal() 
+      
+      ggsave(
+        filename = file.path(output_dir, paste0("Boxplot-Bhat-",model,".pdf")),
+        plot = boxplots_Bhat,
         width = 8, height = 6
       )  
   } 

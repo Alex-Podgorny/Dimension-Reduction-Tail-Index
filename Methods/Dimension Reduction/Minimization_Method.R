@@ -19,7 +19,7 @@ Minimization_from_start <- function(B_start, objective_fn, dim, rows, tol) {
   q <- dim[2]  # Number of columns in the matrix
   
   # Step 1: Orthonormalize the starting matrix
-  B_new <- orthonormalize(B_start, q)
+  B_new <- Normalize(B_start, q)
   
   # Initialize the stopping criterion
   eps <- 1
@@ -33,7 +33,7 @@ Minimization_from_start <- function(B_start, objective_fn, dim, rows, tol) {
     # Step 3: Optimize the matrix block by block
     for (i in 1:min(p / rows, (p %/% rows + 1))) {
       
-      print(i)  # Debug: Print the current block being optimized
+      # print(i)  # Debug: Print the current block being optimized
       
       # Define the objective function for the current block
       min_fn <- function(block) {
@@ -48,18 +48,18 @@ Minimization_from_start <- function(B_start, objective_fn, dim, rows, tol) {
         par = B_new[seq(rows * (i - 1) + 1, min(rows * i, p)), ],  # Initial block
         fn = min_fn,                                               # Objective function
         method = "SANN",                                           # Simulated Annealing
-        control = list(trace = 1, maxit = 20, tmax = 30)           # Optimization settings
+        control = list(maxit = 20, tmax = 30)                      # Optimization settings
       )
       
       # Update the block with the optimized result
       B_new[seq(rows * (i - 1) + 1, min(rows * i, p)), ] <- result$par
       
       # Re-orthonormalize the matrix after each block update
-      B_new <- orthonormalize(B_new, q)
+      B_new <- Normalize(B_new, q)
     }
     
     # Step 4: Update the stopping criterion
-    eps <- norm(B_old %*% t(B_old) - B_new %*% t(B_new), "2")
+    eps <- norm(B_old - B_new, "F")/sqrt(p*q)
   }
   
   # Step 5: Return the optimized matrix
@@ -88,7 +88,7 @@ Minimization <- function(objective_fn, dim, num_init_evals, num_starts, rows, to
   q <- dim[2]  # Number of columns in the matrix (q)
   
   # Step 1: Generate initial random matrices using a Halton sequence
-  init_evals <- randtoolbox::halton(num_init_evals, ncol(X) * q)
+  init_evals <- 2*randtoolbox::halton(num_init_evals, ncol(X) * q)-1
   
   # Step 2: Compute the objective function for each initialized matrix
   value_inits <- apply(init_evals, 1, objective_fn)
