@@ -1,3 +1,6 @@
+# Loading required package
+library(randtoolbox)
+library(pracma)
 
 # Load all R scripts from the 'Methods' directory
 # These scripts define the estimation methods used in the analysis
@@ -29,9 +32,9 @@ abline(0, (lm(z ~ x + 0)$coefficients), col = "red")  # Add a regression line
 # Estimation setup
 set.seed(1)  # Set seed for reproducibility
 
-# Build the compact set X0 by selecting observations within a radius
-r0 <- quantile(as.numeric(apply(X, 1, function(x) norm(x, "2"))), 0.9)
-X0 <- which(as.numeric(apply(X, 1, function(x) norm(x, "2"))) < r0)
+# Identify points in compact subset X0
+epsilon <- (1 - 0.9^(1/p)) / 2
+X0 <- which(apply(X, 1, function(x) min(x) > 0.02 & max(x) < 0.4))
 
 # Set hyperparameters for the estimation
 alpha <- n^(-0.3)  # Tail level
@@ -40,13 +43,13 @@ b <- 0.2           # Bandwidth scaling exponent
 # Initialization for CTI subspace estimation
 Bhat_CTI_q <- list()  # List to store Bhat estimates for different q values
 c_q <- c()            # Vector to store the average tail index for each q
+n0 <- floor(n/20)     # Size of the subsample to calculate Psi
 
 # Estimate the CTI subspace dimension q
 for (q in 1:p) {
   h <- n^(-b / q) / 2                       # Bandwidth for dimension q
-  n0 <- ceiling(n * h^q * alpha * log(n)^1.1)  # Number of observations for the estimation
-  Bhat_CTI <- CTI(X, y, X0[1:n0], q, alpha, h)  # Estimate the CTI subspace
-  Bhat_CTI_q[[q]] <- sign(Bhat_CTI[1,1])*Bhat_CTI                  
+  Bhat_CTI <- CTI(X, y, intersect(X0,sample(1:n,n0)), q, alpha, h, control = list(mink=1))  # Estimate the CTI subspace
+  Bhat_CTI_q[[q]] <- Normalize(Bhat_CTI,q)                  
   c_q[q] <- mean(local_Hill(X, y, X[X0,], Bhat_CTI, alpha, h), na.rm = TRUE)
   
   # Stop if the tail index increases for the current dimension

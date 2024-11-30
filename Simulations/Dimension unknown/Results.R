@@ -16,7 +16,7 @@ seed_dirs <- list.files(base_dir, pattern = "^seed_")
 
 # Initialize matrix results
 Matrix_Choices <- matrix(NA,nrow = 8, ncol=3)
-Matrix_Errors <- matrix(NA,nrow=8,ncol = 8)
+Matrix_Errors <- matrix(NA,nrow=8,ncol = 4)
 i <- 0
 
 for(model in models){
@@ -48,11 +48,10 @@ for(model in models){
   
   Matrix_Choices[i,] <- c(mean(qhat==1),mean(qhat==2),mean(qhat==3))
   
-  Matrix_Errors[i,] <- c(mean(errors_1),sd(errors_1),
-                   mean(errors_2),sd(errors_2),
-                   mean(errors_3),sd(errors_3),
-                   mean(errors_qhat),sd(errors_qhat)
-                    )
+  Matrix_Errors[i,] <- c(mean(errors_1),
+                         mean(errors_2),
+                         mean(errors_3),
+                         mean(errors_qhat))
 } 
 
 Results <- list(Matrix_Choices = Matrix_Choices, Matrix_Errors = Matrix_Errors)

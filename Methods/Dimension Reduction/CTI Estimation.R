@@ -9,14 +9,14 @@
 #' @return Mean of estimated tail-index 
 #' @export
 
-Psi_function <- function(X, y, N0, B, interm_lvl, bandwidth) {
+Psi_function <- function(X, y, N0, B, interm_lvl, bandwidth, mink) {
   
   # Check that X0 is a vector of valid indices
   if (!is.vector(N0) || !all(N0 == as.integer(N0))) stop("Error: 'N0' must be a vector of integer indices.")
   if (any(N0 < 1) || any(N0 > nrow(X))) stop("Error: 'N0' contains indices that are out of bounds for 'X'.")
   
   # Calculate the mean of the conditional tail-index on X0
-  mean(local_Hill(X, y, X[N0, ], B, interm_lvl, bandwidth), na.rm = TRUE)
+  mean(local_Hill(X, y, X[N0, ], B, interm_lvl, bandwidth,mink), na.rm = TRUE)
 }
 
 
@@ -43,17 +43,30 @@ Psi_function <- function(X, y, N0, B, interm_lvl, bandwidth) {
 #'     \item{`num_starts`}{Number of starting points for the optimization.}
 #'     \item{`rows`}{Number of rows in each block for block-wise optimization.}
 #'     \item{`tol`}{Tolerance level for the convergence of the optimization algorithm.}
+#'     \item{`mink`}{Minimum number of points should be used to estimate the tail-index.}
 #'   }
 #' @return The estimated matrix `Bhat`, which represents the base of the CTI subspace.
 #' @export
-CTI <- function(X, y, N0, q, interm_lvl, bandwidth, control = list(num_init_evals = 100, num_starts = 1, rows = 1, tol = 1e-2)) {
+CTI <- function(X, y, N0, q, interm_lvl, bandwidth, control = list()) {
+  
+  # Default control parameters
+  default_control <- list(
+    num_init_evals = 100,  
+    num_starts = 1,        
+    rows = 1,              
+    tol = 1e-2,            
+    mink = 1               
+  )
+  
+  control <- modifyList(default_control, control)
+  
   
   # Step 1: Define the objective function to minimize
   # The objective function computes the criterion Psi_function for a given basis `B`.
   # It ensures that `B` is orthonormalized and evaluates its performance on the data.
   objective_fn <- function(B) {
     B <- orthonormalize(B, q)  # Ensure the basis matrix `B` is orthonormal
-    Psi_function(X, y, N0, B, interm_lvl, bandwidth)  # Compute the criterion
+    Psi_function(X, y, N0, B, interm_lvl, bandwidth, mink = control$mink)  # Compute the criterion
   }
   
   # Step 2: Estimate the base of the CTI subspace using the Minimization function
