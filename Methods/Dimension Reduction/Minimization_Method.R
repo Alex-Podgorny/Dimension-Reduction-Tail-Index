@@ -88,7 +88,7 @@ Minimization <- function(objective_fn, dim, num_init_evals, num_starts, rows, to
   q <- dim[2]  # Number of columns in the matrix (q)
   
   # Step 1: Generate initial random matrices using a Halton sequence
-  init_evals <- 2*randtoolbox::halton(num_init_evals, ncol(X) * q)-1
+  init_evals <- 2*randtoolbox::halton(num_init_evals, p * q)-1
   
   # Step 2: Compute the objective function for each initialized matrix
   value_inits <- apply(init_evals, 1, objective_fn)
