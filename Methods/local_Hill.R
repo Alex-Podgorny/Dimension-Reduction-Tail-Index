@@ -1,4 +1,4 @@
-#' Local_Hill estimator of the conditional tail-index with dimension reduction.
+#' Local_Hill estimator of the conditional tail-index with dimension reduction (cf definition 5).
 #'
 #' @param X Matrix of covariates of dimension p.
 #' @param y Response variable vector.
