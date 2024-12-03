@@ -3,10 +3,10 @@ library(ggplot2)
 
 
 # Define the directory containing the results
-output_dir <- "Simulations/Dimension known/Best_params/Results"
+output_dir <- "Simulations/Simulations Results (section 4.4)/Best_params/Results"
 
 # Define the base directory containing the seed_n folders
-base_dir <- "Simulations/Dimension known/Best_params/Errors/"
+base_dir <- "Simulations/Simulations Results (section 4.4)/Best_params/Errors/"
 
 
 # Retrieve all directories

@@ -14,18 +14,19 @@ seed <- 1
 set.seed(seed)
 
 # Create a directory for saving error results, organized by seed value
-output <- "Simulations/Dimension unknown/Errors/seed_"
-dir.create(paste0(output, seed))
+output <- "Simulations/Dimension Estimation (section 4.5)"
 
 
 # Loop over each dataset in the generated data folder for the given seed
-for (data_name in list.files(path = paste("Simulations/Generated data/seed_", seed, sep="")) ) {
+for (data_name in list.files(path = paste("Simulations/Simulated Data (section 4.3)/Generated data/seed_", seed, sep="")) ) {
+  
+  cat(data_name)
   
   # Define file name for saving error results associated with the current dataset
   nameFile <- paste("Errors_", data_name, sep="")
   
   # Load the generated dataset (contains X, y, and model characteristics)
-  load(paste("Simulations/Generated data/seed_", seed, "/", data_name, sep=""))
+  load(paste("Simulations/Simulated Data (section 4.3)/Generated data/seed_", seed, "/", data_name, sep=""))
   
   # Extract data and characteristics from the loaded dataset
   X <- data$X           # Matrix of covariates
@@ -54,6 +55,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
   Error_q <- c()
   
   for (q in 1:p) {
+    cat("q =", q)
     h <- n^(-b / q) / 2                       # Bandwidth for dimension q
     n0 <- n/20  
     Bhat_CTI <- CTI(X, y, intersect(X0,1:n0), q, alpha, h)  # Estimate the CTI subspace
@@ -63,6 +65,7 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     # Stop if the tail index increases for the current dimension
     if (q > 1 && c_q[q - 1] < c_q[q]) {
       q_hat <- q - 1  # Optimal dimension
+      cat("q_hat =", q_hat)
       break
     }
   }

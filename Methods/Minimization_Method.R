@@ -1,19 +1,18 @@
-#' Block-wise Minimization Starting from a Given Matrix
+#' row-wise Minimization Starting from a Given Matrix
 #'
-#' This function performs a block-wise minimization of an objective function,
+#' This function performs a row-wise minimization of an objective function,
 #' starting from an initial matrix `B_start`. The optimization proceeds iteratively,
-#' adjusting blocks of rows while preserving orthonormality constraints on the matrix.
+#' adjusting rows of rows while preserving orthonormality constraints on the matrix.
 #'
 #' @param B_start Initial matrix for the optimization process.
 #' @param objective_fn Objective function to minimize. It should accept a matrix as input.
 #' @param dim Vector `c(p, q)` specifying the dimensions of the input matrix, where `p` is the
 #'   number of rows and `q` is the number of columns.
-#' @param rows Number of rows in each block used during the block-wise optimization.
 #' @param tol Convergence tolerance for the stopping criterion. Iterations stop when
 #'   the difference between successive matrices is less than this value.
 #' @return An orthonormalized matrix that minimizes the given objective function.
 #'
-Minimization_from_start <- function(B_start, objective_fn, dim, rows, tol) {
+Minimization_from_start <- function(B_start, objective_fn, dim, tol) {
   
   p <- dim[1]  # Number of rows in the matrix
   q <- dim[2]  # Number of columns in the matrix
@@ -30,31 +29,31 @@ Minimization_from_start <- function(B_start, objective_fn, dim, rows, tol) {
     # Save the current matrix for comparison later
     B_old <- B_new
     
-    # Step 3: Optimize the matrix block by block
-    for (i in 1:min(p / rows, (p %/% rows + 1))) {
+    # Step 3: Optimize the matrix row by row
+    for (i in 1:p) {
       
-      print(i)  # Debug: Print the current block being optimized
+      cat(p,"th row", sep ="")  # Print the current row being optimized
       
-      # Define the objective function for the current block
-      min_fn <- function(block) {
-        # Update the current block in the matrix
-        B_new[seq(rows * (i - 1) + 1, min(rows * i, p)), ] <- block
-        # Evaluate the objective function with the updated block
+      # Define the objective function for the current row
+      min_fn <- function(row) {
+        # Update the current row in the matrix
+        B_new[i, ] <- row
+        # Evaluate the objective function with the updated row
         objective_fn(B_new)
       }
       
-      # Perform the optimization on the current block
+      # Perform the optimization on the current row
       result <- optim(
-        par = B_new[seq(rows * (i - 1) + 1, min(rows * i, p)), ],  # Initial block
+        par = B_new[i, ],  # Initial row
         fn = min_fn,                                               # Objective function
         method = "SANN",                                           # Simulated Annealing
         control = list(maxit = 20, tmax = 30)                      # Optimization settings
       )
       
-      # Update the block with the optimized result
-      B_new[seq(rows * (i - 1) + 1, min(rows * i, p)), ] <- result$par
+      # Update the row with the optimized result
+      B_new[i, ] <- result$par
       
-      # Re-orthonormalize the matrix after each block update
+      # Re-orthonormalize the matrix after each row update
       B_new <- orthonormalize(B_new, q)
     }
     
@@ -71,18 +70,17 @@ Minimization_from_start <- function(B_start, objective_fn, dim, rows, tol) {
 #'
 #' This function performs minimization of an objective function where the 
 #' argument is a matrix of dimensions `p*q`. It initializes several starting 
-#' points, evaluates the function, and uses a block-wise optimization strategy 
+#' points, evaluates the function, and uses a row-wise optimization strategy 
 #' to identify the optimal matrix.
 #'
 #' @param objective_fn Objective function to minimize.
 #' @param dim A vector `c(p, q)` specifying the dimensions of the input matrix.
 #' @param num_init_evals Number of initial random evaluations to generate starting points.
 #' @param num_starts Number of starting points used for optimization.
-#' @param rows Number of rows per block for block-wise optimization.
 #' @param tol Tolerance level for convergence in the optimization algorithm.
 #' @return Estimated matrix `Bhat`, representing the base of the CTI subspace.
 #' @export
-Minimization <- function(objective_fn, dim, num_init_evals, num_starts, rows, tol) {
+Minimization <- function(objective_fn, dim, num_init_evals, num_starts, tol) {
   
   p <- dim[1]  # Number of rows in the matrix (p)
   q <- dim[2]  # Number of columns in the matrix (q)
@@ -107,7 +105,6 @@ Minimization <- function(objective_fn, dim, num_init_evals, num_starts, rows, to
       B_start,       # Initial matrix for optimization
       objective_fn,  # Objective function to minimize
       dim,           # Matrix dimensions
-      rows,          # Number of rows per block
       tol            # Convergence tolerance
     )
     

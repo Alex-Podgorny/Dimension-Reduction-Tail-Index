@@ -41,7 +41,6 @@ Psi_function <- function(X, y, N0, B, interm_lvl, bandwidth, mink) {
 #'   \describe{
 #'     \item{`num_init_evals`}{Number of initial random evaluations to generate starting points.}
 #'     \item{`num_starts`}{Number of starting points for the optimization.}
-#'     \item{`rows`}{Number of rows in each block for block-wise optimization.}
 #'     \item{`tol`}{Tolerance level for the convergence of the optimization algorithm.}
 #'     \item{`mink`}{Minimum number of points should be used to estimate the tail-index.}
 #'   }
@@ -53,7 +52,6 @@ CTI <- function(X, y, N0, q, interm_lvl, bandwidth, control = list()) {
   default_control <- list(
     num_init_evals = 100,  
     num_starts = 1,        
-    rows = 1,              
     tol = 1e-2,            
     mink = 1               
   )
@@ -75,7 +73,6 @@ CTI <- function(X, y, N0, q, interm_lvl, bandwidth, control = list()) {
     c(ncol(X), q),                  # Dimensions of the matrix to optimize (p x q)
     control$num_init_evals,         # Number of initial evaluations
     control$num_starts,             # Number of optimization starting points
-    control$rows,                   # Number of rows in each optimization block
     control$tol                     # Tolerance for convergence
   )
   

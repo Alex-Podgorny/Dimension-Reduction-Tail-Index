@@ -1,9 +1,9 @@
 
 # Define the directory containing the results
-output_dir <- "Simulations/Dimension unknown"
+output_dir <- "Simulations/Dimension Estimation (section 4.5)"
 
 # Define the base directory containing the seed_n folders
-base_dir <- "Simulations/Dimension unknown/Errors/"
+base_dir <- "Simulations/Dimension Estimation (section 4.5)/Errors/"
 
 
 # Retrieve all directories

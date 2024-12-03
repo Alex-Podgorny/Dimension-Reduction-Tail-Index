@@ -11,13 +11,22 @@
 #'   \describe{
 #'     \item{`num_init_evals`}{Number of initial random evaluations to generate starting points.}
 #'     \item{`num_starts`}{Number of starting points for the optimization.}
-#'     \item{`rows`}{Number of rows in each block for block-wise optimization.}
 #'     \item{`tol`}{Tolerance level for the convergence of the optimization algorithm.}
 #'   }
 #' @return Estimated matrix `Bhat` representing the base of the central TDR subspace.
 #' @export
 
-Gardes = function(X,y,N0,q,interm_lvl,bandwidth,control = list(num_init_evals = 100, num_starts = 1, rows = 1, tol = 1e-2)){
+Gardes = function(X,y,N0,q,interm_lvl,bandwidth, control = list()){
+  
+  # Default control parameters
+  default_control <- list(
+    num_init_evals = 100,  
+    num_starts = 1,        
+    tol = 1e-2,            
+    mink = 1               
+  )
+  
+  control <- modifyList(default_control, control)
   
   
   vu<-matrix(runif(p*(p-q),-1,1),ncol=(p-q)) # For build orthogonal matrix#
@@ -107,7 +116,6 @@ Gardes = function(X,y,N0,q,interm_lvl,bandwidth,control = list(num_init_evals = 
     c(ncol(X), q),                  # Dimensions of the matrix to optimize (p x q)
     control$num_init_evals,         # Number of initial evaluations
     control$num_starts,             # Number of optimization starting points
-    control$rows,                   # Number of rows in each optimization block
     control$tol                     # Tolerance for convergence
   )
   

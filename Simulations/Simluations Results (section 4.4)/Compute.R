@@ -14,21 +14,20 @@ seed <- 1
 set.seed(seed)
 
 # Create a directory for saving error results, organized by seed value
-output <- "Simulations/Dimension known/Best_params/Errors/seed_"
-dir.create(paste0(output, seed))
+output <- "Simulations/Simulations Results (section 4.4)"
 
 # Define hyperparameter grids for alpha and h exponents
 alpha_exposants <- c(0.2,0.25,0.3,0.35,0.4,0.45)
 h_exposants <- c(0.05,0.1,0.15,0.2,0.3)
 
 # Loop over each dataset in the generated data folder for the given seed
-for (data_name in list.files(path = paste("Simulations/Generated data/seed_", seed, sep="")) ) {
+for (data_name in list.files(path = paste("Simulations/Simulated Data (section 4.3)/Generated data/seed_", seed, sep="")) ) {
   
   # Define file name for saving error results associated with the current dataset
   nameFile <- paste("Errors_", data_name, sep="")
   
   # Load the generated dataset (contains X, y, and model characteristics)
-  load(paste("Simulations/Generated data/seed_", seed, "/", data_name, sep=""))
+  load(paste("Simulations/Simulated Data (section 4.3)/Generated data/seed_", seed, "/", data_name, sep=""))
   
   # Extract data and characteristics from the loaded dataset
   X <- data$X           # Matrix of covariates
@@ -73,11 +72,12 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     for (i in 1:length(alpha_exposants)) {
       for (j in 1:length(h_exposants)) {
         
-        print(i)
-        
         # Set values for hyperparameters alpha and h based on sample size n
-        alpha <- n^(-alpha_exposants[i])
+        a <- alpha_exposants[i]
         b <- h_exposants[j]
+        cat("a =", a, "b =", b)
+              
+        alpha <- n^(-a)
         h <- n^(-b/q) / 2
         n0 <- n/20
         
@@ -136,11 +136,12 @@ for (data_name in list.files(path = paste("Simulations/Generated data/seed_", se
     for (i in 1:length(alpha_exposants)) {
       for (j in 1:length(h_exposants)) {
         
-        print(i)
-        
         # Set values for hyperparameters alpha and h based on sample size n
-        alpha <- n^(-alpha_exposants[i])
+        a <- alpha_exposants[i]
         b <- h_exposants[j]
+        cat("a =", a, "b =", b)
+        
+        alpha <- n^(-a)
         h <- n^(-b/q) / 2
         n0 <- n/20
         
