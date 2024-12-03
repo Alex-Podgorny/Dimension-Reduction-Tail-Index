@@ -131,7 +131,7 @@ for(model in models){
                                    transform = "log10") +
           scale_x_continuous(breaks = 1:6, labels =  c(0.25,0.3,0.35,0.4,0.45,0.5)) +
           scale_y_continuous(breaks = 1:7, labels = c(0,0.05,0.1,0.15,0.2,0.3,0.4)) +
-          labs(title = paste("MISE for",names[[model]],"with", names[[method]]), x = "alpha exponents", y = "h exponents") +
+          labs(title = paste("Estimated MISE for",names[[model]],"with", names[[method]]), x = "alpha exponents", y = "h exponents") +
           theme_minimal() +
           theme(#legend.position = "none",
                 axis.title.x = element_blank(), 
@@ -190,8 +190,8 @@ for(model in models){
       
       boxplots_gamma <- ggplot(all_errors_gamma, aes(x = method, y = value, fill = method)) +
         geom_boxplot() +
-        labs(#title = "Comparison of MISE Across Methods at Optimal Parameters",
-             y = "MISE",
+        labs(title = names[[model]],
+             y = "Optimal Error",
              x = "Method") +
         theme_minimal() +
         theme(legend.position = "none")
@@ -204,8 +204,8 @@ for(model in models){
       
       boxplots_Bhat <- ggplot(all_errors_Bhat, aes(x = method, y = value, fill = method)) +
         geom_boxplot() +
-        labs(#title = "Comparison of Errors Across Methods at Optimal Parameters",
-             y = "MISE",
+        labs(title = names[[model]],
+             y = "Optimal Error",
              x = "Method") +
         theme_minimal()+
         theme(legend.position = "none") 
