@@ -20,7 +20,6 @@ This folder contains the core scripts implementing the methods used in the study
   - **`TDR.R`**: Developed by Gardes in 2018.
 - **`utils.R`**: Includes utility functions, such as matrix normalization and other auxiliary operations.
 
----
 
 ### **2. Simulations**
 This folder corresponds to the simulation study presented in Section 4 and is organized into three subdirectories:
@@ -45,7 +44,6 @@ This folder corresponds to the simulation study presented in Section 4 and is or
   - **`Compute.R`**: Executes the dimension estimation computations.
   - **`Results.R`**: Produces a `Results.RData` file containing the tables presented in the paper.
 
----
 
 ### **3. RealData**
 This folder is related to the real data analysis presented in Section 5.
@@ -54,7 +52,6 @@ This folder is related to the real data analysis presented in Section 5.
   - **`Results.RData`**: Stores the estimated matrix obtained from the analysis.
   - **`Plots/`**: Contains the visualizations and graphs from Section 5.
 
----
 ## Observational Data Availability
 
 In the case study application, we use the daily concentration pollutants in Chicagofrom 1987 to 2000. These data were obtained few years ago from the Internet-based Health and Air Pollution Surveillance System (iHAPSS) website but unfortunately they are no longer available. 
