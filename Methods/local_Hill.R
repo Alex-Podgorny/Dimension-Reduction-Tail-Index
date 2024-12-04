@@ -1,4 +1,5 @@
 #' Local_Hill estimator of the conditional tail-index with dimension reduction (cf definition 5).
+#' The interm_lvl and bandwidth inputs correspond to alpha and h respectively in definition 5.
 #'
 #' @param X Matrix of covariates of dimension p.
 #' @param y Response variable vector.
@@ -11,7 +12,7 @@
 #' @export
 
 
-local_Hill = function(X, y, Z, B, interm_lvl, bandwidth, mink = 1) {
+local_Hill = function(X, y, Z, B, interm_lvl = nrow(X)^(-0.3), bandwidth = nrow(X)^(-0.2/ncol(B))/2 , mink = 1) {
   
   # Check if inputs have correct dimensions and values
   if (ncol(X) != ncol(Z)) stop("Error: X and Z must have the same number of columns (dimension p).")

@@ -12,7 +12,7 @@
 #'   the difference between successive matrices is less than this value.
 #' @return An orthonormalized matrix that minimizes the given objective function.
 #'
-Minimization_from_start <- function(B_start, objective_fn, dim, tol) {
+Minimization_from_start <- function(B_start, objective_fn, dim, tol = 1e-2) {
   
   p <- dim[1]  # Number of rows in the matrix
   q <- dim[2]  # Number of columns in the matrix
@@ -32,7 +32,7 @@ Minimization_from_start <- function(B_start, objective_fn, dim, tol) {
     # Step 3: Optimize the matrix row by row
     for (i in 1:p) {
       
-      cat(p,"th row", sep ="")  # Print the current row being optimized
+      cat(i,"th row", sep ="", "\n")  # Print the current row being optimized
       
       # Define the objective function for the current row
       min_fn <- function(row) {
@@ -80,7 +80,7 @@ Minimization_from_start <- function(B_start, objective_fn, dim, tol) {
 #' @param tol Tolerance level for convergence in the optimization algorithm.
 #' @return Estimated matrix `Bhat`, representing the base of the CTI subspace.
 #' @export
-Minimization <- function(objective_fn, dim, num_init_evals, num_starts, tol) {
+Minimization <- function(objective_fn, dim, num_init_evals, num_starts, tol = 1e-2) {
   
   p <- dim[1]  # Number of rows in the matrix (p)
   q <- dim[2]  # Number of columns in the matrix (q)

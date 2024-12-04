@@ -17,8 +17,8 @@ set.seed(seed)
 output <- "Simulations/Simulations Results (section 4.4)"
 
 # Define hyperparameter grids for alpha and h exponents
-alpha_exposants <- c(0.2,0.25,0.3,0.35,0.4,0.45)
-h_exposants <- c(0.05,0.1,0.15,0.2,0.3)
+alpha_exposants <- c(0.25,0.3,0.35,0.4,0.45,0.5)
+h_exposants <- c(0,0.05,0.1,0.15,0.2,0.3,0.4)
 
 # Loop over each dataset in the generated data folder for the given seed
 for (data_name in list.files(path = paste("Simulations/Simulated Data (section 4.3)/Generated data/seed_", seed, sep="")) ) {
@@ -45,12 +45,7 @@ for (data_name in list.files(path = paste("Simulations/Simulated Data (section 4
   
   # Generate grid points for estimating tail index over X0
   Grid_X0 <- randtoolbox::halton(10000, p) * (1 - 2 * epsilon) + epsilon
-  
-  
-  
-  # Define hyperparameter grids for alpha and h exponents
-  alpha_exposants <- c(0.25,0.3,0.35,0.4,0.45,0.5)
-  h_exposants <- c(0,0.05,0.1,0.15,0.2,0.3,0.4)
+
   
   # Initialize matrices to store error results for each method
   Matrix_errors_Bhat_CTI <- matrix(NA, nrow = length(alpha_exposants), ncol = length(h_exposants))
