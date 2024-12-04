@@ -17,8 +17,8 @@ set.seed(seed)
 output <- "Simulations/Simulations Results (section 4.4)"
 
 # Define hyperparameter grids for alpha and h exponents
-alpha_exposants <- c(0.25,0.3,0.35,0.4,0.45,0.5)
-h_exposants <- c(0,0.05,0.1,0.15,0.2,0.3,0.4)
+alpha_exponants <- c(0.25,0.3,0.35,0.4,0.45,0.5)
+h_exponants <- c(0,0.05,0.1,0.15,0.2,0.3,0.4)
 
 # Loop over each dataset in the generated data folder for the given seed
 for (data_name in list.files(path = paste("Simulations/Simulated Data (section 4.3)/Generated data/seed_", seed, sep="")) ) {
