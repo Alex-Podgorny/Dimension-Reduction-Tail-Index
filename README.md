@@ -1,6 +1,6 @@
 # Dimension Reduction Tail Index
 
-This supplementary material repository contains code, data, instructions and reproducible results from the article:
+This supplementary material repository contains code and reproducible results from the article:
 
 > Laurent Gardes and Alex Podgorny. "Dimension reduction for the estimation of the conditional tail-index".  
 
@@ -43,10 +43,6 @@ This folder corresponds to the simulation study presented in Section 4 and is or
 - **Contents**:
   - **`Compute.R`**: Executes the dimension estimation computations.
   - **`Results.R`**: Produces a `Results.RData` file containing the tables presented in the paper.
-
-## Observational Data Availability
-
-In the case study application, we use the daily concentration pollutants in Chicagofrom 1987 to 2000. These data were obtained few years ago from the Internet-based Health and Air Pollution Surveillance System (iHAPSS) website but unfortunately they are no longer available. 
 ____
 
 By Alex Podgorny, IRMA, University of Strasbourg (FR), 2024.   
