@@ -16,8 +16,8 @@ This folder contains the core scripts implementing the methods used in the study
 - **`Minimization_method.R`**: Contains the optimization algorithm described in Section 4.2.
 - **`CTI_Estimation.R`**: Implements the CTI (Central Tail-Index) estimator (Definition 6).
 - **`Competitors/`**: A subdirectory containing the implementations of competing methods:
-  - **`TIREX.R`**: TIREX 1 and 2 proposed by Aghbalou et al. (2024).
-  - **`TDR.R`**: Developed by Gardes in 2018.
+  - **`TIREX.R`**: TIREX 1 and 2 proposed in Aghbalou, A., Portier, F., Sabourin, A. and Zhou, C. (2024). Tail Inverse Regression: dimension reduction for prediction of extremes, Bernoulli.
+  - **`TDR.R`**: Developed in Gardes, L. (2018). Tail Dimension Reduction for extreme quantile estimation, Extremes.
 - **`utils.R`**: Includes utility functions, such as matrix normalization and other auxiliary operations.
 
 
@@ -43,14 +43,6 @@ This folder corresponds to the simulation study presented in Section 4 and is or
 - **Contents**:
   - **`Compute.R`**: Executes the dimension estimation computations.
   - **`Results.R`**: Produces a `Results.RData` file containing the tables presented in the paper.
-
-
-### **3. RealData**
-This folder is related to the real data analysis presented in Section 5.
-- **Contents**:
-  - **`Application.R`**: The script implementing the estimation procedure on the real dataset.
-  - **`Results.RData`**: Stores the estimated matrix obtained from the analysis.
-  - **`Plots/`**: Contains the visualizations and graphs from Section 5.
 
 ## Observational Data Availability
 
